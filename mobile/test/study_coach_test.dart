@@ -122,6 +122,9 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       final workspace = Workspace(null);
       addTearDown(workspace.dispose);
+      // Decode the real bundled asset outside the widget test's fake clock;
+      // pumpAndSettle only waits for frames, not platform asset I/O.
+      await tester.runAsync(() => rootBundle.loadString(quizAsset));
       await tester.pumpWidget(
         MaterialApp(
           theme: deskTheme(),
@@ -139,6 +142,7 @@ void main() {
       expect(find.text('Dakika 25'), findsOneWidget);
       expect(workspace.studyJournal.at(morning).minutesByCourse, {'FN200': 25});
 
+      expect(find.text('Financial instruments'), findsOneWidget);
       await _tap(tester, find.text('Financial instruments'));
       await _tap(tester, find.byKey(const Key('start-fn200-quiz')));
       final questions = tester
