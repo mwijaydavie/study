@@ -49,11 +49,14 @@ jobs:
       - name: Resolve Flutter dependencies
         working-directory: mobile
         run: flutter pub get
-      - name: Analyze and test
+      - name: Analyze Flutter source
+        id: analyze
         working-directory: mobile
-        run: |
-          flutter analyze --no-pub
-          flutter test --no-pub
+        run: bash ../scripts/report-ci-failure.sh flutter analyze --no-pub
+      - name: Run Flutter unit and widget tests
+        if: success() || steps.analyze.conclusion == 'failure'
+        working-directory: mobile
+        run: bash ../scripts/report-ci-failure.sh flutter test --no-pub --reporter expanded
       - name: Optionally reuse the personal test signing key
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         env:
@@ -72,10 +75,10 @@ jobs:
           mv "$key" "$HOME/.android/debug.keystore"
       - name: Validate the Android debug build
         working-directory: mobile
-        run: flutter build apk --debug --no-pub
+        run: bash ../scripts/report-ci-failure.sh flutter build apk --debug --no-pub
       - name: Test Android payloads and private document storage
         working-directory: mobile/android
-        run: ./gradlew :app:testDebugUnitTest
+        run: bash ../../scripts/report-ci-failure.sh ./gradlew :app:testDebugUnitTest
       - name: Verify APK signature and 16 KiB library alignment
         run: |
           apk=mobile/build/app/outputs/flutter-apk/app-debug.apk
