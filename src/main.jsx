@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ArrowDownToLine, ArrowUpRight, CalendarDays, Check, ChevronRight, FolderOpen, Globe2, GraduationCap, ListChecks, Share, Smartphone, WifiOff } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpRight, CalendarDays, Check, ChevronRight, CircleCheck, CloudDownload, FolderOpen, Globe2, GraduationCap, Info, ListChecks, RefreshCw, Share, Smartphone, WifiOff } from 'lucide-react';
 import '@fontsource-variable/plus-jakarta-sans/wght.css';
 import './styles.css';
 import { courses, eatClock } from './schedule.js';
+import { useOffline } from './hooks/useOffline.js';
 import { Modal } from './components/ui.jsx';
 import Timetable from './components/Timetable.jsx';
 import StudyPlan from './components/StudyPlan.jsx';
@@ -24,10 +25,10 @@ function readRoute() {
   return { current, selected };
 }
 
-function Brand() {
-  return <a className="brand" href="#timetable" aria-label="StudyDesk home">
+function Brand({ offlineReady = false }) {
+  return <a className="brand" href="#timetable" aria-label={offlineReady ? 'StudyDesk home · Offline ready' : 'StudyDesk home'}>
     <img src="/icons/favicon.svg" width="40" height="40" alt="" />
-    <span><strong>StudyDesk<span>.</span></strong><small>STUDENT WORKSPACE</small></span>
+    <span><strong>StudyDesk<span>.</span></strong><small className={offlineReady ? 'brand-ready' : undefined}>{offlineReady ? <><CircleCheck size={11} aria-hidden="true" /> OFFLINE READY</> : 'STUDENT WORKSPACE'}</small></span>
   </a>;
 }
 
@@ -51,7 +52,15 @@ function Sidebar({ active }) {
   </aside>;
 }
 
-function InstallDialog({ installed, onClose }) {
+const offlineCopy = {
+  ready: { icon: CircleCheck, title: 'Offline ready', description: 'Your timetable, plan, guides, and app downloads are saved on this device. Recent changes won’t appear until you reconnect.' },
+  preparing: { icon: CloudDownload, title: 'Preparing offline copy', description: 'Keep StudyDesk open and online until you see Offline ready.' },
+  'not-ready': { icon: Info, title: 'Offline copy not confirmed', description: 'Open StudyDesk directly in your browser while online. Reload or install an available app update, then check for Offline ready.' },
+  unavailable: { icon: Info, title: 'Offline setup unavailable here', description: 'Use the production site over HTTPS, directly in your phone browser.' },
+};
+
+function InstallDialog({ installed, offlineStatus, onClose }) {
+  const { icon: OfflineIcon, title, description } = offlineCopy[offlineStatus];
   return <Modal title={installed ? 'StudyDesk is installed' : 'Add StudyDesk to your home screen'} label="Install app" onClose={onClose}>
     {installed ? <p className="guide-intro">You can open StudyDesk from your app icon without going through your browser.</p> : <>
       <p className="guide-intro">Open the timetable in one tap. There’s nothing to download from an app store.</p>
@@ -60,9 +69,20 @@ function InstallDialog({ installed, onClose }) {
         <div><span className="square-icon tone-violet"><Smartphone size={20} /></span><div><h3>Android · Chrome</h3><p>Open Chrome’s ⋮ menu, choose <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</p></div></div>
         <div><span className="square-icon tone-blue"><Share size={20} /></span><div><h3>iPhone · Safari</h3><p>Tap <strong>Share</strong>, scroll to <strong>Add to Home Screen</strong>, then tap <strong>Add</strong>.</p></div></div>
       </div>
-      <p className="fine-print">Open the app online once to prepare it for offline use. If you’re using the Arena preview, its URL may not be permanent.</p>
+      <p className="fine-print">Open from the home-screen icon while online once. If you’re using the Arena preview, its URL may not be permanent.</p>
     </>}
+    <div className="offline-check" data-status={offlineStatus} role="status">
+      <span className={`square-icon ${offlineStatus === 'ready' ? 'tone-green' : 'tone-blue'}`}><OfflineIcon size={19} aria-hidden="true" /></span>
+      <div><strong>{title}</strong><p>{description}</p></div>
+    </div>
   </Modal>;
+}
+
+function UpdateNotice({ state, onUpdate }) {
+  return <div className="update-banner">
+    <div><RefreshCw size={17} aria-hidden="true" /><p role="status">{state === 'retry' ? 'Couldn’t apply the update. Your saved version is still available.' : 'A new StudyDesk version has been saved on this device.'}</p></div>
+    <button className="button secondary" type="button" onClick={onUpdate} disabled={state === 'applying'}>{state === 'applying' ? 'Updating…' : state === 'retry' ? 'Try again' : 'Update now'}</button>
+  </div>;
 }
 
 function App() {
@@ -71,6 +91,8 @@ function App() {
   const [online, setOnline] = useState(navigator.onLine);
   const [showInstall, setShowInstall] = useState(false);
   const [installed, setInstalled] = useState(standalone);
+  const { status: offlineStatus, updateReady, updateState, applyUpdate } = useOffline();
+  const offlineReady = offlineStatus === 'ready';
   const installPrompt = useRef(null);
 
   useEffect(() => {
@@ -125,10 +147,11 @@ function App() {
     <div className="app-workspace">
       <header className="topbar">
         <div className="topbar-inner">
-          <div className="mobile-brand"><Brand /></div>
+          <div className="mobile-brand"><Brand offlineReady={offlineReady} /></div>
           <div className="breadcrumbs"><span>Workspace</span><ChevronRight size={15} /><strong>{current.title}</strong></div>
           <div className="topbar-actions">
             <span className="timezone-label" title="East Africa Time, UTC+3"><Globe2 size={16} /> Dar es Salaam <span className="inline-dot" /> EAT</span>
+            {offlineReady && <span className="offline-badge" role="status" title="The current version is saved on this device"><CircleCheck size={15} aria-hidden="true" /> Offline ready</span>}
             <button className="button primary install-button" type="button" onClick={install}>
               {installed ? <Check size={17} /> : <ArrowDownToLine size={17} />}<span>{installed ? 'App installed' : 'Install app'}</span>
             </button>
@@ -136,7 +159,8 @@ function App() {
         </div>
       </header>
       <main className="workspace-content" id="main-content" tabIndex={-1}>
-        {!online && <p className="offline-banner" role="status"><WifiOff size={17} /> You’re offline. Showing the saved semester information.</p>}
+        {!online && <p className="offline-banner" role="status"><WifiOff size={17} aria-hidden="true" /> {offlineReady ? 'You’re offline. Showing the saved timetable; recent changes may not appear.' : 'You’re offline. This device’s offline copy hasn’t been confirmed.'}</p>}
+        {updateReady && <UpdateNotice state={updateState} onUpdate={applyUpdate} />}
         {page === 'timetable' && <Timetable clock={clock} />}
         {page === 'plan' && <StudyPlan clock={clock} />}
         {page === 'materials' && <Materials selected={selected} />}
@@ -144,12 +168,8 @@ function App() {
       </main>
     </div>
     <Navigation active={page} mobile />
-    {showInstall && <InstallDialog installed={installed} onClose={() => setShowInstall(false)} />}
+    {showInstall && <InstallDialog installed={installed} offlineStatus={offlineStatus} onClose={() => setShowInstall(false)} />}
   </div>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);
-
-if (import.meta.env.PROD && window.isSecureContext && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch((error) => console.warn('Offline setup did not complete:', error));
-}

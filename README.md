@@ -11,14 +11,16 @@ A personal, phone-friendly study desk for Mwijay Davie. It uses **Semester 1, ac
 ```sh
 npm ci               # Node.js 22.12+ (or a newer supported release)
 npm run dev          # live development; no service worker
-npm test             # source transcription, EAT rollover and study-block checks
+npm test             # timetable, EAT rollover, study blocks and offline-worker checks
 npm run build        # static output + versioned offline cache in dist/
 npm run preview      # serve the production build locally
 ```
 
 Serve `dist/` from the **root** of a stable HTTPS URL for everyday phone use. Use the `build` command (not Vite's standalone build command) so the service worker is generated. The same static site works without an API, accounts or environment variables. If deploying to a shared host, review the name and the timetable; it is not an authenticated app. The Arena preview link can expire.
 
-Open the HTTPS site **directly in the phone browser**, not inside an embedded preview. On **Android/Chrome**, use the app's **Install app** button or Chrome's menu → **Install app / Add to Home screen**. On **iPhone/Safari**, use **Share → Add to Home Screen**. Open once online so the files can cache. The timetable, guides and downloadable study kit use the versioned cache after that first successful load. In local development, only the production preview on localhost supports testing the service worker over HTTP.
+Open the HTTPS site **directly in the phone browser**, not inside an embedded preview. On **Android/Chrome**, use the app’s **Install app** button or Chrome’s menu → **Install app / Add to Home screen**. On **iPhone/Safari**, use **Share → Add to Home Screen**. Open from the icon **while online** and wait for **Offline ready** (also shown in the install dialog). Then try airplane mode. The saved timetable, guides, study kit and on-device checklist work without a connection. New changes need an online check; if the browser clears the app’s storage, set it up online again. For local HTTP, use the production preview on localhost to test the service worker.
+
+The installed app opens from its cached release first, even on a poor connection. When another release has downloaded, choose **Update now** to switch to it. Existing study checklist entries stay on the device. Serve `/sw.js` with `Cache-Control: no-cache` on any permanent host so clients can check for new releases.
 
 ## Update the semester or study kit
 
@@ -33,6 +35,14 @@ Open the HTTPS site **directly in the phone browser**, not inside an embedded pr
   ```
 
 - To recreate the locally organized original PDFs and private ZIP, run `python scripts/import-materials.py '/path/to/uploads'`. This copies the five named PDFs from the upload directory into their module subfolders. Original handouts and the private ZIP are not tracked or bundled in the website.
+
+## Mwijay’s personal Flutter app
+
+The [personal Flutter app](mobile/README.md) in `mobile/` bundles the timetable, study plan and materials independently of the web preview. Run `npm run flutter:sync` when updating shared content, then rebuild the native app. On Android, **Settings → Class reminders** saves an inexact notification for a confirmed class date. **Settings → Campus events** adds manually entered offline events, optional StudyDesk notifications, and an optional Calendar editor or `.ics` handoff without reading your calendars. **Materials → My files** imports your own PDF, Word and PowerPoint copies offline; [Cloudinary backup is planned, not connected](docs/cloudinary-documents.md). The [GitHub debug APK steps and Android 17 phone checks](mobile/README.md#android-17-and-apk-from-github) remain open. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and AI separate. The PWA remains the web edition.
+
+## Future UAUT Connect pilot
+
+Start with the [timetable pilot roadmap](docs/uaut-connect-roadmap.md) once the personal app works offline on Mwijay’s phone. It covers the programme/year picker, proposed subdomain, optional Google sign-in, and approval and publishing workflow. No Firebase project, public deployment, admissions site or DNS settings were changed here.
 
 ## UAUT student submission covers
 

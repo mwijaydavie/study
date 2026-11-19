@@ -1,0 +1,35 @@
+name: studydesk
+publish_to: none
+description: Mwijay's offline-first personal StudyDesk for UAUT BIT Year 2.
+version: 0.4.0+4
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+  flutter: '>=3.32.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.5.3
+  share_plus: ^11.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/semester.json
+    - assets/data/plan.json
+    - assets/data/guides.json
+    - assets/art/app-mark.png
+    - assets/art/planner.webp
+    - assets/downloads/bit-year-2-timetable.pdf
+    - assets/downloads/bit-year-2-study-planner.docx
+    - assets/downloads/is274-ooad-revision.pptx
+    - assets/fonts/OFL.txt
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans.ttf
