@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../coach/finance_quiz.dart';
 import '../coach/study_journal.dart';
 import '../design.dart';
 import '../study_data.dart';
@@ -29,7 +28,6 @@ class _StudyCoachPageState extends State<StudyCoachPage>
   late String _course = widget.data.courses.containsKey('FN200')
       ? 'FN200'
       : widget.data.courses.keys.first;
-  late final Future<FinanceQuizBank> _bank;
   final _minutes = TextEditingController();
   late String _editingDay;
   String? _source;
@@ -40,7 +38,6 @@ class _StudyCoachPageState extends State<StudyCoachPage>
   @override
   void initState() {
     super.initState();
-    _bank = FinanceQuizBank.load(rootBundle);
     _loadEditor(widget.now());
     WidgetsBinding.instance.addObserver(this);
   }
@@ -131,8 +128,9 @@ class _StudyCoachPageState extends State<StudyCoachPage>
     if (mounted) setState(() => _loadEditor(widget.now()));
   }
 
-  void _practice(FinanceQuizBank bank) {
-    final questions = bank.practice(sourceId: _source);
+  void _practice() {
+    final questions = widget.data.financeQuiz?.practice(sourceId: _source);
+    if (questions == null || questions.isEmpty) return;
     if (questions.isEmpty) return;
     FocusScope.of(context).unfocus();
     Navigator.of(context).push<void>(
@@ -241,70 +239,55 @@ class _StudyCoachPageState extends State<StudyCoachPage>
     ),
   );
 
-  Widget _quiz() => DeskCard(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SectionTitle(
-          'Tujipime · FN200',
-          'Maswali ya offline kutoka PDF mbili. Kila jibu lina maelezo na rejea ya ukurasa.',
-        ),
-        const SizedBox(height: 9),
-        FutureBuilder<FinanceQuizBank>(
-          future: _bank,
-          builder: (context, snapshot) {
-            final bank = snapshot.data;
-            if (bank == null) {
-              return Text(
-                snapshot.hasError
-                    ? 'Couldn’t open the quiz pack. Your log and guides are still available.'
-                    : 'Inafungua maswali ya offline…',
-              );
-            }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _quiz() {
+    final bank = widget.data.financeQuiz;
+    return DeskCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SectionTitle(
+            'Tujipime · FN200',
+            'Maswali ya offline kutoka PDF mbili. Kila jibu lina maelezo na rejea ya ukurasa.',
+          ),
+          const SizedBox(height: 9),
+          if (bank == null)
+            const Text(
+              'Couldn’t open the quiz pack. Your log and guides are still available.',
+            )
+          else ...[
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
               children: [
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: [
-                    for (final entry in [
-                      const MapEntry<String?, String>(null, 'PDF zote'),
-                      ...bank.sources.values.map(
-                        (source) =>
-                            MapEntry<String?, String>(source.id, source.title),
-                      ),
-                    ])
-                      ChoiceChip(
-                        label: Text(entry.value),
-                        selected: _source == entry.key,
-                        onSelected: (selected) {
-                          if (!selected || entry.key == _source) return;
-                          DeskHaptics.selection();
-                          setState(() => _source = entry.key);
-                        },
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                FilledButton.tonalIcon(
-                  key: const Key('start-fn200-quiz'),
-                  onPressed: () => _practice(bank),
-                  icon: const Icon(Icons.quiz_outlined, size: 19),
-                  label: const Text('Anza quiz · maswali 5'),
-                ),
+                for (final source in [null, ...bank.sources.values])
+                  ChoiceChip(
+                    label: Text(source?.title ?? 'PDF zote'),
+                    selected: _source == source?.id,
+                    onSelected: (selected) {
+                      if (!selected || _source == source?.id) return;
+                      DeskHaptics.selection();
+                      setState(() => _source = source?.id);
+                    },
+                  ),
               ],
-            );
-          },
-        ),
-        const SizedBox(height: 7),
-        Text(
-          'Soma muhtasari: Materials → FN200. Quiz hii si huduma ya AI mtandaoni.',
-          style: deskType(11, color: DeskColors.muted, height: 1.4),
-        ),
-      ],
-    ),
-  );
+            ),
+            const SizedBox(height: 8),
+            FilledButton.tonalIcon(
+              key: const Key('start-fn200-quiz'),
+              onPressed: _practice,
+              icon: const Icon(Icons.quiz_outlined, size: 19),
+              label: const Text('Anza quiz · maswali 5'),
+            ),
+          ],
+          const SizedBox(height: 7),
+          Text(
+            'Soma muhtasari: Materials → FN200. Quiz hii si huduma ya AI mtandaoni.',
+            style: deskType(11, color: DeskColors.muted, height: 1.4),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(

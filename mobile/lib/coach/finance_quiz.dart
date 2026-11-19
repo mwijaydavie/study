@@ -30,8 +30,7 @@ class FinanceQuestion {
       '${source.file} · PDF ${pages.length == 1 ? 'p.' : 'pp.'} ${pages.join(', ')}';
 }
 
-/// Authored practice, not model output. Each answer is tied to the PDF pages
-/// used for it. Load separately so a bad quiz bundle cannot block the timetable.
+/// Authored practice, not model output. Each answer is tied to its PDF pages.
 class FinanceQuizBank {
   const FinanceQuizBank._(this.sources, this.questions);
 

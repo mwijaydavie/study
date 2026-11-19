@@ -38,6 +38,10 @@ For future builds:
 2. After merge, open **Actions → StudyDesk Android checks & APK → Run workflow**, select **main**, and wait for success. Under that run's **Artifacts**, download `studydesk-android-debug` and unzip `StudyDesk-debug.apk` and its SHA-256 checksum. The artifact expires in seven days. Download from your own repository's Actions run. This repo is public: an Actions artifact is **not private distribution**. The APK only bundles curated assets, not the personal files you add on your phone.
 3. Install the debug test APK on Android 17 (for example, `adb install -r StudyDesk-debug.apk` on an authorized device), then follow the four checklists below with dummy files. This is a **debug APK**, not a production/store release. If Android disallows the installer, use a trusted workstation with authorized USB debugging; don't uninstall just to bypass a failed update.
 
+### Try branch features without replacing StudyDesk
+
+A manual run on a non-`main` branch with **attach_smoke_apk** checked can attach `studydesk-android-smoke`. Unzip `StudyDesk-test.apk` and its checksum. It installs as **StudyDesk Test** (`tz.altraware.studydesk.smoke`), with its own empty data, beside the original app. Use dummy data; this is not an in-place update or a way to migrate documents. It uses the runner's debug key, not the stable test key. Like the main artifact, it is public, expires after seven days, and includes the bundled greetings but no personal PDFs or device data. PR checks never attach an APK.
+
 ### Keep updates compatible before storing real documents
 
 A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+6` for Study Coach and spoken welcomes) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
@@ -71,7 +75,7 @@ Tabs and timetable selections have short content transitions; checklist progress
 
 ## Phase 1 phone check
 
-**Start here.** Download and unzip the GitHub artifact while online, install `StudyDesk-debug.apk`, then turn on airplane mode and make sure Wi-Fi is off. Use the installed StudyDesk from your app drawer, not the web preview. If installation is rejected, record the exact message; don't uninstall an existing copy or clear its data to force the test.
+**Start here.** Download and unzip the appropriate GitHub artifact while online. Use `StudyDesk-test.apk` if you're testing beside an existing installation, or `StudyDesk-debug.apk` for a compatible main build. Then turn on airplane mode and make sure Wi-Fi is off. Open the installed app from your app drawer, not the web preview. If installation is rejected, record the exact message; don't uninstall an existing copy or clear its data to force the test.
 
 1. Launch in airplane mode. On **Timetable → Day**, select **Thu** and confirm **08:00 IS237 practical (Computer Lab)** and **11:00 FN200 lecture (BH301)** in 24-hour mode. Flip Day/Week, open a detail sheet, and confirm **Up Next** uses EAT even if you temporarily change the phone's time zone. The timetable is a revised draft, not a live university feed.
 2. In Settings, turn off **24-hour time** and turn on **Open Week view by default**. Return to Timetable, then force-close and reopen; both choices should remain.

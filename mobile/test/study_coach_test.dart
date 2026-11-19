@@ -19,16 +19,31 @@ Future<void> _tap(WidgetTester tester, Finder target) async {
   await tester.pumpAndSettle();
 }
 
+const _quizAsset = 'assets/data/finance-quiz.json';
+
+class _UnreadableQuizBundle extends CachingAssetBundle {
+  @override
+  Future<ByteData> load(String key) => key == _quizAsset
+      ? Future.error(FlutterError('Missing quiz pack'))
+      : rootBundle.load(key);
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late StudyData data;
   late FinanceQuizBank bank;
-  const quizAsset = 'assets/data/finance-quiz.json';
   final morning = DateTime.utc(2026, 11, 19, 6);
 
   setUpAll(() async {
     data = await StudyData.load(rootBundle);
-    bank = await FinanceQuizBank.load(rootBundle);
+    bank = data.financeQuiz!;
+  });
+
+  test('a missing quiz pack leaves the offline semester available', () async {
+    final withoutQuiz = await StudyData.load(_UnreadableQuizBundle());
+    expect(withoutQuiz.financeQuiz, isNull);
+    expect(withoutQuiz.sessions, isNotEmpty);
+    expect(withoutQuiz.guides, contains('finance-function'));
   });
 
   test(
@@ -50,7 +65,7 @@ void main() {
         true,
       );
       final broken =
-          jsonDecode(await rootBundle.loadString(quizAsset))
+          jsonDecode(await rootBundle.loadString(_quizAsset))
               as Map<String, dynamic>;
       broken['questions'][0]['pages'] = [40];
       expect(
@@ -122,9 +137,6 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       final workspace = Workspace(null);
       addTearDown(workspace.dispose);
-      // Decode the real bundled asset outside the widget test's fake clock;
-      // pumpAndSettle only waits for frames, not platform asset I/O.
-      await tester.runAsync(() => rootBundle.loadString(quizAsset));
       await tester.pumpWidget(
         MaterialApp(
           theme: deskTheme(),

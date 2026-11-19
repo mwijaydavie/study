@@ -2,6 +2,11 @@ name: StudyDesk Android checks & APK
 
 on:
   workflow_dispatch:
+    inputs:
+      attach_smoke_apk:
+        description: Attach a public side-by-side Android test APK from this branch (non-main only)
+        type: boolean
+        default: false
   pull_request:
     paths:
       - 'mobile/**'
@@ -21,6 +26,8 @@ jobs:
   mobile-check:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    env:
+      ORG_GRADLE_PROJECT_studydeskSmoke: ${{ github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main' && inputs.attach_smoke_apk }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -79,26 +86,39 @@ jobs:
       - name: Test Android payloads and private document storage
         working-directory: mobile/android
         run: bash ../../scripts/report-ci-failure.sh ./gradlew :app:testDebugUnitTest
-      - name: Verify APK signature and 16 KiB library alignment
+      - name: Verify APK ID, signature, alignment, and audio resources
         run: |
           apk=mobile/build/app/outputs/flutter-apk/app-debug.apk
           tools="$ANDROID_HOME/build-tools/35.0.0"
+          package=tz.altraware.studydesk
+          if [[ "$ORG_GRADLE_PROJECT_studydeskSmoke" == true ]]; then
+            package+=.smoke
+          fi
+          "$tools/aapt" dump badging "$apk" > "$RUNNER_TEMP/studydesk-badging.txt"
+          if ! grep -F "package: name='$package' " "$RUNNER_TEMP/studydesk-badging.txt"; then
+            echo '::error::Unexpected StudyDesk APK package ID.'
+            exit 1
+          fi
           "$tools/apksigner" verify --print-certs "$apk"
           "$tools/zipalign" -c -P 16 4 "$apk"
           python3 scripts/check-android-elf.py "$apk"
           bash scripts/report-ci-failure.sh python3 scripts/check-apk-welcome.py "$apk"
       - name: Prepare the test APK and checksum
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || inputs.attach_smoke_apk)
         run: |
+          filename=StudyDesk-debug.apk
+          if [[ "$ORG_GRADLE_PROJECT_studydeskSmoke" == true ]]; then
+            filename=StudyDesk-test.apk
+          fi
           mkdir -p "$RUNNER_TEMP/studydesk-apk"
-          cp mobile/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/studydesk-apk/StudyDesk-debug.apk"
+          cp mobile/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/studydesk-apk/$filename"
           cd "$RUNNER_TEMP/studydesk-apk"
-          sha256sum StudyDesk-debug.apk > StudyDesk-debug.apk.sha256
+          sha256sum "$filename" > "$filename.sha256"
       - name: Attach debug APK to this workflow run
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || inputs.attach_smoke_apk)
         uses: actions/upload-artifact@v4
         with:
-          name: studydesk-android-debug
+          name: ${{ env.ORG_GRADLE_PROJECT_studydeskSmoke == 'true' && 'studydesk-android-smoke' || 'studydesk-android-debug' }}
           path: ${{ runner.temp }}/studydesk-apk/
           if-no-files-found: error
           retention-days: 7

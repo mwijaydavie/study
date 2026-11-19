@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
+import 'coach/finance_quiz.dart';
+
 const campusZone = 'Africa/Dar_es_Salaam';
 const campusUtcOffset = Duration(hours: 3);
 const weekDays = <String>[
@@ -228,9 +230,20 @@ class StudyData {
     required this.sessions,
     required this.blocks,
     required this.guides,
+    required this.financeQuiz,
   });
 
+  static Future<FinanceQuizBank?> _loadOptionalQuiz(AssetBundle bundle) async {
+    try {
+      return await FinanceQuizBank.load(bundle);
+    } catch (_) {
+      // An invalid/missing quiz pack must not prevent offline timetable use.
+      return null;
+    }
+  }
+
   static Future<StudyData> load(AssetBundle bundle) async {
+    final quiz = _loadOptionalQuiz(bundle);
     final files = await Future.wait([
       bundle.loadString('assets/data/semester.json'),
       bundle.loadString('assets/data/plan.json'),
@@ -273,6 +286,7 @@ class StudyData {
               MapEntry(key, StudyGuide.fromJson(value as Map<String, dynamic>)),
         ),
       ),
+      financeQuiz: await quiz,
     );
   }
 
@@ -285,6 +299,7 @@ class StudyData {
   final List<Session> sessions;
   final List<StudyBlock> blocks;
   final Map<String, StudyGuide> guides;
+  final FinanceQuizBank? financeQuiz;
 
   String get termLabel => '$term · $year';
   String titleFor(Session session) =>

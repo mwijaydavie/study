@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
-        android:label="StudyDesk"
+        android:label="${studyDeskLabel}"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/studydesk_data_rules"
         android:name="${applicationName}"
