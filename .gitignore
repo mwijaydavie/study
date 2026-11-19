@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.cache/
+__pycache__/
+.DS_Store
+
+# Original university handouts and the personal export are kept out of the public repo.
+/study-materials/**/source/
+/study-materials/organized-materials.zip
+
+# Personalized submission covers and their local profile/logo.
+/study-materials/private/

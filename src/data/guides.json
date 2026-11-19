@@ -1,0 +1,38 @@
+{
+  "ooad": {
+    "title": "OOAD in plain language", "source": "Introduction-OOAD.pdf · pp. 4–20", "intro": "Start with what the user needs before deciding how the software will accomplish it. Fikiria tatizo kwanza, halafu suluhisho.",
+    "sections": [
+      { "title": "01 / Analysis vs. design", "body": "Analysis asks ‘what does the system need to do?’ For a campus app: a student must be able to find the room for their next class. Design asks ‘how will it do that?’ Give each session a day, time and venue; choose how the app selects the next session." },
+      { "title": "02 / Choose your UML diagram", "body": "A use case shows an actor’s goal. A class diagram shows concepts and their relationships. A sequence diagram shows who sends which message and when. An activity diagram describes the steps and decisions in a workflow." },
+      { "title": "03 / Connect the ideas", "body": "A Course can have many Sessions. A Session has a start time, end time and venue. Abstraction keeps the details relevant to the task; encapsulation keeps the rules for updating the data with the object responsible for it." }
+    ],
+    "exercise": "Without your notes, write the use case ‘Check next class’ with one alternate flow for a day with no classes. Sketch two classes that can support it."
+  },
+  "sql": {
+    "title": "Group work: an SQL roadmap", "source": "COMPLETE GROUPS WORK.pdf · Group 7 to Group 1, then Class Works", "intro": "One pack covers multiple group briefs. Confirm your assigned group and deadline before using this roadmap. Tumia sample data tu.",
+    "sections": [
+      { "title": "01 / Find your section", "body": "Groups 7 and 6 work on student/course databases and core SQL; Group 5 includes relational operations and query logic. Groups 4, 3 and 2 cover integrity, roles and secure database case studies. Group 1 has a hospital database; Class Works extends into object-relational models." },
+      { "title": "02 / Build before you query", "body": "Draw entities and cardinalities, then create tables and keys. A student can take many courses and a course can have many students: bridge the relationship with Enrolment and foreign keys. Insert deliberately varied fictional data before testing queries." },
+      { "title": "03 / Check the output", "body": "An INNER JOIN shows students with matching enrolments. A LEFT JOIN starting at Student also keeps unenrolled students, with NULL for the enrolment columns. For reports, include purpose, schema, SQL, expected result and a screenshot of your actual result." }
+    ],
+    "exercise": "Invent three students, two courses and enrol only two students. Predict what both join types will return, then compare your predictions with the database."
+  },
+  "ip": {
+    "title": "Unit I — IP fundamentals", "source": "UNIT I.pdf · pp. 2–20 · Course code not confirmed", "intro": "Think of an IP packet as an envelope: the header helps deliver it; the payload is the message. IP itself is best effort, not a guarantee of delivery.",
+    "sections": [
+      { "title": "01 / Packets and routing", "body": "A router uses the destination IP to choose a next hop. Each router decrements IPv4’s time-to-live (TTL); a packet is dropped when TTL expires, so it cannot loop forever." },
+      { "title": "02 / Read an address", "body": "IPv4 has 32 bits (four octets). In 192.168.15.1/24, the first 24 bits identify the network and 8 bits remain for hosts. Historical address classes appear in the notes; use the actual CIDR prefix for modern subnet calculations." },
+      { "title": "03 / Private addresses and NAT", "body": "Private IPv4 ranges include 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16. NAT changes address mappings at a gateway. Port Address Translation (PAT) can use port mappings to let many internal connections share one public address." }
+    ],
+    "exercise": "Draw a phone, router and web server. Label which address is private, which is public, and where translation happens on the way out and back."
+  },
+  "subnet": {
+    "title": "Unit II — Subnetting", "source": "UNIT II.pdf · pp. 2–12 · Course code not confirmed", "intro": "Subnetting splits a network into smaller address blocks. Borrow bits from the host part to create more subnets, leaving fewer addresses per subnet.",
+    "sections": [
+      { "title": "01 / Work from the prefix", "body": "Split 192.168.1.0/24 into four equal blocks: borrow 2 bits since 2² = 4. The new prefix is /26, leaving 6 host bits. The mask is 255.255.255.192 and each block has 64 addresses (62 ordinary usable host addresses)." },
+      { "title": "02 / Find the boundaries", "body": "The four network IDs end in .0, .64, .128 and .192. For 192.168.1.64/26 the network address is .64 and broadcast is .127, so normal hosts run from .65 to .126." },
+      { "title": "03 / FLSM vs. VLSM", "body": "FLSM uses the same prefix length for every subnet. VLSM uses different prefix lengths to fit different needs. Try placing the largest block first and check alignment before assigning the smaller blocks." }
+    ],
+    "exercise": "List the host range and broadcast for 192.168.1.128/26, then explain the difference between having 64 addresses and 62 usable hosts."
+  }
+}
