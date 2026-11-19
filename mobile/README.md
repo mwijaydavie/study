@@ -1,6 +1,6 @@
 # StudyDesk for Mwijay · Flutter personal app
 
-A separate, personal app for UAUT BIT Year 2. The yellow planner artwork, dark **Up Next** card, purple Study plan, and green Materials follow the PWA. **Settings** is the fourth bottom tab. The timetable, guides and three generated study files are bundled, so they need no connection, web preview, or sign-in. Day/Week, checklist rollover, class reminders and Campus events use Dar es Salaam time (EAT / UTC+3), not the phone’s configured time zone. Android has opt-in local notifications, an optional Calendar handoff, and a private **Materials → My files** library for your documents. This phase does not change the iOS or web editions.
+A separate, personal app for UAUT BIT Year 2. The yellow planner artwork, dark **Up Next** card, purple Study plan, and green Materials follow the PWA. **Settings** is the fourth bottom tab. The timetable, guides and three generated study files are bundled, so they need no connection, web preview, or sign-in. Day/Week, checklist rollover, class reminders and Campus events use Dar es Salaam time (EAT / UTC+3), not the phone’s configured time zone. Android has opt-in local notifications, an optional Calendar handoff, a private **Materials → My files** library, and spoken welcomes.
 
 ## Build and run
 
@@ -28,7 +28,9 @@ The native reminder, calendar and document tests can be run after the debug buil
 
 ## Android 17 and APK from GitHub
 
-**Verified build: StudyDesk `0.4.0+4` (`13f352b` on `main`).** The [GitHub Actions run](https://github.com/mwijaydavie/study/actions/runs/44454871933) passed the PWA and asset checks, Flutter analysis and tests, debug build, Android JVM tests, and APK signature, ARM64 and 16 KiB alignment checks. Under **Artifacts**, download `studydesk-android-debug` before it expires on **26 November 2026**. It contains `StudyDesk-debug.apk` and its SHA-256 checksum. This build used the runner's debug key, not a persistent test signing key.
+**Current automated build: StudyDesk `0.6.0+6`.** The [branch verification run](https://github.com/mwijaydavie/study/actions/runs/44491730115) passed the PWA and asset checks, Flutter analysis and tests, Android debug build and JVM tests. It checked the normal APK's package ID, signature, ARM64 and 16 KiB alignment, and all five uncompressed welcome clips. This run did not publish an APK.
+
+**Previous downloadable APK: `0.4.0+4` (`13f352b` on `main`).** The [main build](https://github.com/mwijaydavie/study/actions/runs/44454871933) attached `studydesk-android-debug`, containing `StudyDesk-debug.apk` and its SHA-256 checksum, until **26 November 2026**. It uses the runner's debug key, not a persistent test signing key, and does not include spoken welcomes or Study Coach.
 
 The target phone is **Android 17 (API 37)**, but installation and behavior on that phone are still unverified. The build uses Flutter 3.32.8 and Android SDK 35; build and alignment checks do not substitute for the [phone test below](#phase-1-phone-check). See Android's [API 37 setup](https://developer.android.com/about/versions/17/setup-sdk) and [page-size checks](https://developer.android.com/guide/practices/page-sizes).
 
@@ -40,7 +42,9 @@ For future builds:
 
 ### Try branch features without replacing StudyDesk
 
-A manual run on a non-`main` branch with **attach_smoke_apk** checked can attach `studydesk-android-smoke`. Unzip `StudyDesk-test.apk` and its checksum. It installs as **StudyDesk Test** (`tz.altraware.studydesk.smoke`), with its own empty data, beside the original app. Use dummy data; this is not an in-place update or a way to migrate documents. It uses the runner's debug key, not the stable test key. Like the main artifact, it is public, expires after seven days, and includes the bundled greetings but no personal PDFs or device data. PR checks never attach an APK.
+From `mobile/`, run `ORG_GRADLE_PROJECT_studydeskSmoke=true flutter build apk --debug` for a local, private build. Install the resulting `build/app/outputs/flutter-apk/app-debug.apk` on an authorized phone. It installs as **StudyDesk Test** (`tz.altraware.studydesk.smoke`), with its own empty data, beside the original app. Use dummy data; this is not an in-place update or a way to migrate documents.
+
+If Mwijay approves a **public test download**, a manual run on a non-`main` branch with **attach_smoke_apk** checked can attach `studydesk-android-smoke`. Unzip `StudyDesk-test.apk` and its checksum. This artifact uses the runner's debug key, expires after seven days, and includes the bundled greetings but no personal PDFs or device data. PR checks never attach an APK.
 
 ### Keep updates compatible before storing real documents
 

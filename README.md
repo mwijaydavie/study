@@ -34,7 +34,7 @@ The installed app opens from its cached release first, even on a poor connection
   npm run build
   ```
 
-- To recreate the locally organized original PDFs and private ZIP, run `python scripts/import-materials.py '/path/to/uploads'`. This copies the five named PDFs from the upload directory into their module subfolders. Original handouts and the private ZIP are not tracked or bundled in the website.
+- To recreate the locally organized original PDFs and private ZIP, run `python scripts/import-materials.py '/path/to/uploads'`. This copies the five required PDFs and, if present, both FN200 handouts into their module subfolders. Original handouts and the private ZIP are not tracked or bundled in the website.
 
 ## Mwijay’s personal Flutter app
 
@@ -42,7 +42,7 @@ The [personal Flutter app](mobile/README.md) in `mobile/` bundles the timetable,
 
 **Study plan → Study Coach** records minutes and quiz totals by EAT day on the device. **Materials → FN200** has guides from both Finance handouts and the Coach has cited practice questions. Android also has optional spoken welcomes. [Online AI is not enabled](docs/study-coach-ai.md); no provider keys or private files are bundled.
 
-The [GitHub debug APK build](mobile/README.md#android-17-and-apk-from-github) for `0.4.0+4` passed; it predates the motion and Study Coach changes. The [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check) is not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and online AI separate. The PWA remains the web edition.
+The [automated Android build and APK checks](mobile/README.md#android-17-and-apk-from-github) passed on the `0.6.0+6` branch. This check did not publish an APK; the previous `0.4.0+4` download predates motion and Study Coach. The [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check) is not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and online AI separate. The PWA remains the web edition.
 
 ## Future UAUT Connect pilot
 
