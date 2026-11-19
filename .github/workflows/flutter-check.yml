@@ -1,0 +1,103 @@
+name: StudyDesk Android checks & APK
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'mobile/**'
+      - 'src/**'
+      - 'public/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'index.html'
+      - 'vite.config.js'
+      - 'package*.json'
+      - '.github/workflows/flutter-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Check the PWA and bundled assets
+        run: |
+          npm ci
+          npm run flutter:check
+          npm test
+          npm run build
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools platforms;android-35 build-tools;35.0.0 ndk;26.1.10909125
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.8'
+          channel: stable
+      - name: Resolve Flutter dependencies
+        working-directory: mobile
+        run: flutter pub get
+      - name: Analyze Flutter source
+        id: analyze
+        working-directory: mobile
+        run: bash ../scripts/report-ci-failure.sh flutter analyze --no-pub
+      - name: Run Flutter unit and widget tests
+        if: success() || steps.analyze.conclusion == 'failure'
+        working-directory: mobile
+        run: bash ../scripts/report-ci-failure.sh flutter test --no-pub --reporter expanded
+      - name: Optionally reuse the personal test signing key
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          TEST_KEYSTORE: ${{ secrets.STUDYDESK_TEST_DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [[ -z "$TEST_KEYSTORE" ]]; then
+            echo '::warning::No stable test key configured. This APK is for a fresh test install, not updating a previous CI APK.'
+            exit 0
+          fi
+          umask 077
+          mkdir -p "$HOME/.android"
+          key=$(mktemp "$HOME/.android/studydesk.XXXXXX")
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$TEST_KEYSTORE" | base64 --decode > "$key"
+          keytool -list -keystore "$key" -storepass android -alias androiddebugkey >/dev/null
+          mv "$key" "$HOME/.android/debug.keystore"
+      - name: Validate the Android debug build
+        working-directory: mobile
+        run: bash ../scripts/report-ci-failure.sh flutter build apk --debug --no-pub
+      - name: Test Android payloads and private document storage
+        working-directory: mobile/android
+        run: bash ../../scripts/report-ci-failure.sh ./gradlew :app:testDebugUnitTest
+      - name: Verify APK signature and 16 KiB library alignment
+        run: |
+          apk=mobile/build/app/outputs/flutter-apk/app-debug.apk
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          "$tools/apksigner" verify --print-certs "$apk"
+          "$tools/zipalign" -c -P 16 4 "$apk"
+          python3 scripts/check-android-elf.py "$apk"
+      - name: Prepare the test APK and checksum
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p "$RUNNER_TEMP/studydesk-apk"
+          cp mobile/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/studydesk-apk/StudyDesk-debug.apk"
+          cd "$RUNNER_TEMP/studydesk-apk"
+          sha256sum StudyDesk-debug.apk > StudyDesk-debug.apk.sha256
+      - name: Attach debug APK to this workflow run
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: studydesk-android-debug
+          path: ${{ runner.temp }}/studydesk-apk/
+          if-no-files-found: error
+          retention-days: 7

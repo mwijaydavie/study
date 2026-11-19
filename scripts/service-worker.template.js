@@ -18,27 +18,37 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
+async function offlineCopyReady() {
+  if (!await caches.has(CACHE)) return false;
+  const cache = await caches.open(CACHE);
+  const saved = new Set((await cache.keys()).map((request) => new URL(request.url).pathname));
+  return PRECACHE.every((path) => saved.has(path));
+}
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'STUDYDESK_OFFLINE_STATUS' && event.ports[0]) {
+    const port = event.ports[0];
+    event.waitUntil(offlineCopyReady().catch(() => false).then((ready) => port.postMessage({ ready })));
+  } else if (event.data?.type === 'STUDYDESK_ACTIVATE_UPDATE') {
+    event.waitUntil((async () => {
+      if (await offlineCopyReady()) await self.skipWaiting();
+    })());
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-  if (request.mode === 'navigate' && ['/', '/index.html'].includes(url.pathname)) {
-    event.respondWith((async () => {
-      // A versioned shell and its asset set are kept together for offline loads.
-      const cache = await caches.open(CACHE);
-      try {
-        const response = await fetch(request);
-        return response.ok ? response : (await cache.match('/')) || response;
-      } catch {
-        return (await cache.match('/')) || Response.error();
-      }
-    })());
-  } else if (PATHS.has(url.pathname) && !url.search) {
-    event.respondWith((async () => {
-      const cache = await caches.open(CACHE);
-      // This allowlist is static and same-origin. Match the precache URL even
-      // when a module or font request adds an Origin header (Vary: Origin).
-      return (await cache.match(url.pathname, { ignoreVary: true })) || fetch(request);
-    })());
-  }
+  const appNavigation = request.mode === 'navigate' && ['/', '/index.html'].includes(url.pathname);
+  if (!appNavigation && (!PATHS.has(url.pathname) || url.search)) return;
+
+  event.respondWith((async () => {
+    // Start from the active release even on a weak connection. Updates have
+    // their own complete precache, so the HTML never depends on the next release.
+    // Match the canonical URL even if the request adds Origin (Vary: Origin).
+    const path = appNavigation ? '/' : url.pathname;
+    const saved = await caches.match(path, { cacheName: CACHE, ignoreVary: true }).catch(() => undefined);
+    return saved || fetch(request);
+  })());
 });
