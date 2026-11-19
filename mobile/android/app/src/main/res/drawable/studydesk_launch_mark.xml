@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android's no-icon-background splash uses a 288 dp canvas. Keep the 96 dp
+     book tile centered well inside the circular safe area. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <group android:translateX="96" android:translateY="96">
+        <path
+            android:fillColor="#FFD467"
+            android:pathData="M22,0 H74 Q96,0 96,22 V74 Q96,96 74,96 H22 Q0,96 0,74 V22 Q0,0 22,0 Z" />
+        <path
+            android:fillColor="#FFF3CA"
+            android:strokeColor="#222336"
+            android:strokeWidth="2.3"
+            android:strokeLineJoin="round"
+            android:pathData="M28,31 L36,30 Q42,30 48,35 V67 Q42,62 36,62 L28,63 Z" />
+        <path
+            android:fillColor="#E7D8FF"
+            android:strokeColor="#222336"
+            android:strokeWidth="2.3"
+            android:strokeLineJoin="round"
+            android:pathData="M48,35 Q54,30 60,30 L68,31 V63 L60,62 Q54,62 48,67 Z" />
+        <path
+            android:strokeColor="#222336"
+            android:strokeWidth="1.7"
+            android:strokeLineCap="round"
+            android:pathData="M33,42 L38,42 L43,44 M33,50 L38,50 L43,52" />
+        <path
+            android:name="checkmark"
+            android:strokeColor="#222336"
+            android:strokeWidth="2.5"
+            android:strokeLineJoin="round"
+            android:strokeLineCap="round"
+            android:trimPathEnd="0"
+            android:pathData="M53,47 L57,51 L64,43" />
+    </group>
+</vector>

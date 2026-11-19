@@ -5,13 +5,14 @@
 **How to use this list:** Say **“next”** or **“go on”**. Work on the first unfinished phase, not the whole list. First read this file and the current `mobile/` project. Close each turn with what changed, what was tested on a real phone versus only in mocks, and what is still blocked. Do not mark a phone check done without that test.
 
 - [x] **1 · Flutter foundation source:** keep the yellow timetable, dark Up Next, Day/Week, study plan and course folders from the PWA. Add Settings to the bottom bar and bundle offline assets. Include Android/iOS projects and the StudyDesk launcher icon.
-- [ ] **1 · Device check:** run analyze/tests, build for Mwijay’s phone, and follow the [airplane-mode smoke test](../mobile/README.md#phase-1-phone-check). This is still unverified.
+- [x] **1 · Build and automated checks:** PR #2 merged; the [GitHub debug APK build](../mobile/README.md#android-17-and-apk-from-github) passed for `0.4.0+4`.
+- [ ] **1 · Device check (next):** install on Mwijay’s Android 17 phone and report the [airplane-mode smoke test](../mobile/README.md#phase-1-phone-check). No real-device result yet.
 - [x] **2 · Android class notification source:** opt-in, confirmed single dates, lead times, pending, edit/cancel, tests and notification taps.
-- [ ] **2 · Android device check:** [permissions, airplane mode/lock screen, cancellation and reboot](../mobile/README.md#phase-2-android-reminder-check) on Mwijay’s phone. No APK or real-device result yet.
+- [ ] **2 · Android device check:** [permissions, airplane mode/lock screen, cancellation and reboot](../mobile/README.md#phase-2-android-reminder-check) on Mwijay’s phone.
 - [x] **3 · Android campus events source:** manual offline book, regular event notifications and optional Calendar editor / `.ics` export.
-- [ ] **3 · Android device check:** [offline edits/cancellation, calendar import in two time zones, and background alert](../mobile/README.md#phase-3-android-campus-events-check). No phone test or APK verified.
+- [ ] **3 · Android device check:** [offline edits/cancellation, calendar import in two time zones, and background alert](../mobile/README.md#phase-3-android-campus-events-check).
 - [x] **Personal documents prep:** Android **Materials → My files**, private offline PDF/Word/PowerPoint import, open/share/remove. [Cloudinary upload handoff](cloudinary-documents.md) is planned; no live service.
-- [ ] **Android 17 APK/device gate:** [PR checks → manual GitHub APK → device checks](../mobile/README.md#android-17-and-apk-from-github). Get the test signing setup right before storing personal files. Mwijay reported Android 17; hardware testing is still open.
+- [ ] **Android 17 My files and update check:** use [dummy documents](../mobile/README.md#my-files--android-17-phone-check). Set up a persistent test signing key and verify a same-key update before relying on in-app storage.
 - [ ] **4 · Optional stronger alarms**
 - [ ] **5 · Private TZS budget**
 - [ ] **6 · Offline study helper and opt-in AI**

@@ -28,7 +28,11 @@ The native reminder, calendar and document tests can be run after the debug buil
 
 ## Android 17 and APK from GitHub
 
-The target phone is **Android 17 (API 37)**. This build still uses the pinned Flutter 3.32.8 / Android SDK 35 toolchain; compiling against new APIs and opting into a higher target SDK are separate from testing on the newer OS. The handset has not been tested yet. The APK workflow verifies the APK signature, ARM64 engine presence, ZIP alignment and 16 KiB LOAD-segment alignment of the 64-bit libraries. See Android's [API 37 setup](https://developer.android.com/about/versions/17/setup-sdk) and [page-size checks](https://developer.android.com/guide/practices/page-sizes).
+**Verified build: StudyDesk `0.4.0+4` (`13f352b` on `main`).** The [GitHub Actions run](https://github.com/mwijaydavie/study/actions/runs/44454871933) passed the PWA and asset checks, Flutter analysis and tests, debug build, Android JVM tests, and APK signature, ARM64 and 16 KiB alignment checks. Under **Artifacts**, download `studydesk-android-debug` before it expires on **26 November 2026**. It contains `StudyDesk-debug.apk` and its SHA-256 checksum. This build used the runner's debug key, not a persistent test signing key.
+
+The target phone is **Android 17 (API 37)**, but installation and behavior on that phone are still unverified. The build uses Flutter 3.32.8 and Android SDK 35; build and alignment checks do not substitute for the [phone test below](#phase-1-phone-check). See Android's [API 37 setup](https://developer.android.com/about/versions/17/setup-sdk) and [page-size checks](https://developer.android.com/guide/practices/page-sizes).
+
+For future builds:
 
 1. Open the PR and wait for **StudyDesk Android checks & APK** to pass before merging. It checks the web build and asset mirrors, runs Flutter analysis/tests, builds the app, runs the Android JVM tests, and checks the APK. No APK is attached on PRs, and no test signing key is read there.
 2. After merge, open **Actions → StudyDesk Android checks & APK → Run workflow**, select **main**, and wait for success. Under that run's **Artifacts**, download `studydesk-android-debug` and unzip `StudyDesk-debug.apk` and its SHA-256 checksum. The artifact expires in seven days. Download from your own repository's Actions run. This repo is public: an Actions artifact is **not private distribution**. The APK only bundles curated assets, not the personal files you add on your phone.
@@ -36,7 +40,7 @@ The target phone is **Android 17 (API 37)**. This build still uses the pinned Fl
 
 ### Keep updates compatible before storing real documents
 
-A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+4` in this version) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
+A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+5` for the motion changes) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
 
 For stable personal **test** builds, choose one debug keystore (the same one that signed any build you need to update). If starting fresh, you can generate a test-only key locally, outside the repo:
 
@@ -49,15 +53,35 @@ base64 < "$HOME/studydesk-test.jks" | tr -d '\n' | gh secret set STUDYDESK_TEST_
 
 `android` is the conventional **debug** key password, not a release password. Set the secret from your own machine or GitHub repository settings and keep the private keystore backed up securely. Never commit it, send it in chat, or reuse a release key here. Only the manual main build uses the secret if configured. No CI key is configured by the source change. Compare the APK signing certificate fingerprints in the Actions log before installing an update.
 
-**Verification status:** The Kotlin Android bridges were compiled with API 35 and Flutter/AndroidX signatures, and the pure Kotlin payload/storage rules were checked on the JVM. The workspace does not have a complete Flutter/Android SDK or a connected phone. Flutter analysis/tests, the hosted workflow and its APK alignment checks on a real build, and device checks on Android 17 are still open. The PWA build and web tests pass separately.
+## Launch, motion and touch feedback (`0.5.0+5`)
+
+This update is separate from the verified `0.4.0+4` APK above. After building the new version, Android 12+ starts with a branded system splash whose book draws a checkmark. Older Android uses a static StudyDesk mark. Flutter uses the same launch color and fades into the ready workspace without a minimum splash time. Resuming an already open app does not replay the intro. The OS can shorten or skip its part of the animation.
+
+Tabs and timetable selections have short content transitions; checklist progress eases to the latest total. Detail sheets use the platform's drag and Back behavior. Touch feedback is limited to changed selections, checklist actions and a successful local document import. It uses system touch effects, not a vibration permission or a background alert. Android can suppress them if touch feedback is off or an effect is unsupported. Flutter's custom transitions skip when the device requests reduced motion.
+
+**Phone check for this build:** Cold-start the app in airplane mode and look for the book-to-timetable handoff without a blank flash or extra wait. Switch tabs quickly, change Day/Week and the selected day, open and drag-dismiss a class sheet, then tick and untick a dummy checklist task. Confirm only changed selections give a small touch effect. Repeat with **Remove animations** on and system touch feedback off. Check large text and both gesture and three-button navigation where available. Physical animation timing and haptic feel are not verified by widget tests.
 
 ## Phase 1 phone check
 
-1. Launch in airplane mode. Select Thursday and confirm **08:00 IS237 practical (Computer Lab)** and **11:00 FN200 lecture (BH301)**. Flip Day/Week, open a detail sheet, and confirm **Up Next** uses EAT even if you temporarily change the phone's time zone. The timetable is a revised draft, not a live university feed.
+**Start here.** Download and unzip the GitHub artifact while online, install `StudyDesk-debug.apk`, then turn on airplane mode and make sure Wi-Fi is off. Use the installed StudyDesk from your app drawer, not the web preview. If installation is rejected, record the exact message; don't uninstall an existing copy or clear its data to force the test.
+
+1. Launch in airplane mode. On **Timetable → Day**, select **Thu** and confirm **08:00 IS237 practical (Computer Lab)** and **11:00 FN200 lecture (BH301)** in 24-hour mode. Flip Day/Week, open a detail sheet, and confirm **Up Next** uses EAT even if you temporarily change the phone's time zone. The timetable is a revised draft, not a live university feed.
 2. In Settings, turn off **24-hour time** and turn on **Open Week view by default**. Return to Timetable, then force-close and reopen; both choices should remain.
 3. Tick a study block, reopen offline, then clear the current week using the Settings confirmation. A different EAT study week starts empty.
 4. Search Materials, read a guide, and share the bundled timetable PDF to Files or an installed reader. Dismissing the share sheet should not claim the file was saved.
 5. Try increased text size and Android back/dismiss behavior. Check there is **no notification permission prompt on launch**.
+
+Record only what you tried. Keep `not run` for skipped checks; the GitHub result does not count as a phone result.
+
+```text
+Build (e.g. 0.4.0+4) / phone model / Android version:
+Install: pass / fail / not run
+Offline launch and Thursday timetable (1): pass / fail / not run
+Settings and checklist persist (2–3): pass / fail / not run
+Offline Materials and bundled PDF share (4): pass / fail / not run
+Larger text, back and no launch permission prompt (5): pass / fail / not run
+First issue, if any (step and exact error; no personal data):
+```
 
 ## Phase 2 Android reminder check
 
@@ -102,4 +126,4 @@ The Android/iOS runners are adapted from the [Flutter 3.32.8 templates](https://
 
 ## What to do next
 
-Run the PR checks and test the GitHub APK on Android 17 before relying on notifications, imported documents or in-place updates. The [phase prompts](../docs/mwijay-flutter-next-prompts.md) keep stronger alarms, a private TZS tracker and study AI separate. None of those is activated by this Android update.
+Start with the [Phase 1 phone check](#phase-1-phone-check) on Android 17. Once the installed app works offline, check reminders, Campus events and My files using the sections above. Use dummy files until same-key updates have been checked. The [phase prompts](../docs/mwijay-flutter-next-prompts.md) keep stronger alarms, a private TZS tracker and study AI separate.

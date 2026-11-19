@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'study_data.dart';
+import 'ui/desk_motion.dart';
 
 abstract final class DeskColors {
   static const ink = Color(0xff222336);
   static const muted = Color(0xff646574);
   static const paper = Color(0xfff8f8f4);
+  // Match Android's studydesk_launch_surface for a continuous first frame.
+  static const launchSurface = Color(0xfffbf4e1);
   static const line = Color(0xffeae9e3);
   static const gold = Color(0xffffe7a6);
   static const goldEdge = Color(0xffecc66b);
   static const midnight = Color(0xff242438);
   static const white = Color(0xffffffff);
 }
+
+final deskSystemBars = SystemUiOverlayStyle.dark.copyWith(
+  statusBarColor: Colors.transparent,
+);
 
 const violet = (surface: Color(0xffeee7ff), ink: Color(0xff594199));
 const green = (surface: Color(0xffe3f2ea), ink: Color(0xff2f664b));
@@ -457,6 +465,7 @@ Future<void> deskSheet(
   useSafeArea: true,
   isScrollControlled: true,
   showDragHandle: true,
+  sheetAnimationStyle: DeskMotion.sheetOf(context),
   backgroundColor: DeskColors.white,
   builder: (sheet) => SafeArea(
     top: false,

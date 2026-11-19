@@ -4,6 +4,7 @@ import '../design.dart';
 import '../reminders/reminders.dart';
 import '../study_data.dart';
 import '../study_files.dart';
+import '../ui/desk_motion.dart';
 import '../workspace.dart';
 import 'reminders_page.dart';
 
@@ -31,6 +32,20 @@ class _TimetablePageState extends State<TimetablePage> {
   StudyData get data => widget.data;
   CampusClock get clock => widget.clock;
   Workspace get workspace => widget.workspace;
+
+  void _selectDay(int day) {
+    final selected = day == clock.weekday ? null : day;
+    if (selected == _selectedDay) return;
+    DeskHaptics.selection();
+    setState(() => _selectedDay = selected);
+  }
+
+  void _selectView(Set<ScheduleView> selection) {
+    final view = selection.single;
+    if (view == workspace.view) return;
+    DeskHaptics.selection();
+    workspace.setView(view);
+  }
 
   void _openDetails(Session session) => showTimetableSession(
     context,
@@ -90,8 +105,7 @@ class _TimetablePageState extends State<TimetablePage> {
                       : DeskColors.white,
                 ),
               ),
-              onSelectionChanged: (selection) =>
-                  workspace.setView(selection.first),
+              onSelectionChanged: _selectView,
             ),
           ],
         ),
@@ -115,8 +129,7 @@ class _TimetablePageState extends State<TimetablePage> {
                           selected: day == index,
                           today: index == clock.weekday,
                           count: data.onDay(index).length,
-                          onSelected: () =>
-                              setState(() => _selectedDay = index),
+                          onSelected: () => _selectDay(index),
                         ),
                       ),
                     ],
@@ -129,22 +142,32 @@ class _TimetablePageState extends State<TimetablePage> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => setState(() => _selectedDay = null),
+                onPressed: () => _selectDay(clock.weekday),
                 child: const Text('Back to today'),
               ),
             ),
         ],
         const SizedBox(height: 12),
-        for (final index in dayView ? [day] : [1, 2, 3, 4, 5]) ...[
-          _DayList(
-            day: index,
-            today: index == clock.weekday,
-            data: data,
-            use24Hour: workspace.use24Hour,
-            onOpen: _openDetails,
+        DeskReveal(
+          key: ValueKey((workspace.view, dayView ? day : null)),
+          duration: DeskMotion.quick,
+          distance: 4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final index in dayView ? [day] : [1, 2, 3, 4, 5]) ...[
+                _DayList(
+                  day: index,
+                  today: index == clock.weekday,
+                  data: data,
+                  use24Hour: workspace.use24Hour,
+                  onOpen: _openDetails,
+                ),
+                const SizedBox(height: 14),
+              ],
+            ],
           ),
-          const SizedBox(height: 14),
-        ],
+        ),
       ],
     );
 

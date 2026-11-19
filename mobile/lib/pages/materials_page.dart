@@ -4,6 +4,7 @@ import '../design.dart';
 import '../documents/personal_documents.dart';
 import '../study_data.dart';
 import '../study_files.dart';
+import '../ui/desk_motion.dart';
 import 'personal_documents_page.dart';
 
 class MaterialsPage extends StatefulWidget {
@@ -193,7 +194,11 @@ class _MaterialsPageState extends State<MaterialsPage> {
                   child: ChoiceChip(
                     label: Text(entry.value),
                     selected: entry.key == _filter,
-                    onSelected: (_) => setState(() => _filter = entry.key),
+                    onSelected: (selected) {
+                      if (!selected || entry.key == _filter) return;
+                      DeskHaptics.selection();
+                      setState(() => _filter = entry.key);
+                    },
                     labelStyle: deskType(
                       11,
                       color: entry.key == _filter ? green.ink : DeskColors.ink,

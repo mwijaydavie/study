@@ -17,6 +17,8 @@ import 'pages/timetable_page.dart';
 import 'reminders/reminder_plan.dart';
 import 'reminders/reminders.dart';
 import 'study_data.dart';
+import 'ui/desk_launch.dart';
+import 'ui/desk_motion.dart';
 import 'workspace.dart';
 
 void main() {
@@ -101,33 +103,20 @@ class _BootPageState extends State<_BootPage> {
   @override
   Widget build(BuildContext context) => FutureBuilder<StudyData>(
     future: _load,
-    builder: (context, snapshot) {
-      if (snapshot.hasData && _workspace != null) {
-        return DeskHome(
-          data: snapshot.data!,
-          workspace: _workspace!,
-          reminders: _reminders,
-          documents: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-              ? const AndroidDocumentLibrary()
-              : null,
-        );
-      }
-      return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: snapshot.hasError
-                ? const Text(
-                    'Couldn’t load the bundled StudyDesk files. Rebuild with the matching offline assets.',
-                    textAlign: TextAlign.center,
-                  )
-                : const CircularProgressIndicator(
-                    semanticsLabel: 'Opening StudyDesk',
-                  ),
-          ),
-        ),
-      );
-    },
+    builder: (context, snapshot) => DeskLaunchStage(
+      failed: snapshot.hasError,
+      ready: snapshot.hasData && _workspace != null
+          ? DeskHome(
+              data: snapshot.data!,
+              workspace: _workspace!,
+              reminders: _reminders,
+              documents:
+                  !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+                  ? const AndroidDocumentLibrary()
+                  : null,
+            )
+          : null,
+    ),
   );
 }
 
@@ -248,6 +237,46 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     _tab = 2;
   });
 
+  void _selectDestination(int index) {
+    if (index != _tab) {
+      DeskHaptics.selection();
+    } else if (index != 2 || _folder.isEmpty) {
+      return;
+    }
+    setState(() {
+      _tab = index;
+      if (index == 2) _folder = '';
+    });
+  }
+
+  Widget _destination() => switch (_tab) {
+    0 => TimetablePage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      openFolder: _openFolder,
+      reminders: widget.reminders,
+    ),
+    1 => PlanPage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      openFolder: _openFolder,
+    ),
+    2 => MaterialsPage(
+      data: widget.data,
+      clock: _clock,
+      initialFolder: _folder,
+      documents: widget.documents,
+    ),
+    _ => SettingsPage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      reminders: widget.reminders,
+    ),
+  };
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -263,7 +292,7 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
       if (!didPop && _tab != 0) setState(() => _tab = 0);
     },
     child: AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+      value: deskSystemBars,
       child: ListenableBuilder(
         listenable: widget.workspace,
         builder: (context, _) => Scaffold(
@@ -274,33 +303,12 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
                 child: SafeArea(
                   top: false,
                   bottom: false,
-                  child: switch (_tab) {
-                    0 => TimetablePage(
-                      data: widget.data,
-                      clock: _clock,
-                      workspace: widget.workspace,
-                      openFolder: _openFolder,
-                      reminders: widget.reminders,
+                  child: ClipRect(
+                    child: DeskReveal(
+                      key: ValueKey(_tab),
+                      child: _destination(),
                     ),
-                    1 => PlanPage(
-                      data: widget.data,
-                      clock: _clock,
-                      workspace: widget.workspace,
-                      openFolder: _openFolder,
-                    ),
-                    2 => MaterialsPage(
-                      data: widget.data,
-                      clock: _clock,
-                      initialFolder: _folder,
-                      documents: widget.documents,
-                    ),
-                    _ => SettingsPage(
-                      data: widget.data,
-                      clock: _clock,
-                      workspace: widget.workspace,
-                      reminders: widget.reminders,
-                    ),
-                  },
+                  ),
                 ),
               ),
             ],
@@ -311,11 +319,12 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
             ),
             child: NavigationBar(
               height: 65,
+              animationDuration: DeskMotion.durationOf(
+                context,
+                DeskMotion.section,
+              ),
               selectedIndex: _tab,
-              onDestinationSelected: (index) => setState(() {
-                _tab = index;
-                if (index == 2) _folder = '';
-              }),
+              onDestinationSelected: _selectDestination,
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.calendar_month_outlined),

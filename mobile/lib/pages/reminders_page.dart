@@ -4,6 +4,7 @@ import '../design.dart';
 import '../reminders/reminder_plan.dart';
 import '../reminders/reminders.dart';
 import '../study_data.dart';
+import '../ui/desk_motion.dart';
 
 void _feedback(BuildContext context, String? message) {
   if (message == null || !context.mounted) return;
@@ -176,6 +177,7 @@ class ClassRemindersPage extends StatelessWidget {
       useSafeArea: true,
       isScrollControlled: true,
       showDragHandle: true,
+      sheetAnimationStyle: DeskMotion.sheetOf(context),
       builder: (sheet) => SafeArea(
         top: false,
         child: SizedBox(

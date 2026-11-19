@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Use the OS starting window; do not start a second splash activity. -->
+    <style name="LaunchTheme" parent="@style/StudyDeskWindow">
+        <item name="android:windowSplashScreenBackground">@color/studydesk_launch_surface</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/studydesk_launch_animation</item>
+        <item name="android:windowSplashScreenAnimationDuration">340</item>
+        <item name="android:statusBarColor">@color/studydesk_launch_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

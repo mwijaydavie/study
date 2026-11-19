@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../design.dart';
 import '../study_data.dart';
 import '../study_files.dart';
+import '../ui/desk_motion.dart';
 import '../workspace.dart';
 
 class PlanPage extends StatelessWidget {
@@ -60,12 +61,20 @@ class PlanPage extends StatelessWidget {
               const SizedBox(height: 9),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: LinearProgressIndicator(
-                  value: fraction,
-                  minHeight: 7,
-                  backgroundColor: const Color(0xffded2f5),
-                  color: violet.ink,
-                  semanticsLabel: 'Weekly study progress',
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(end: fraction),
+                  duration: DeskMotion.durationOf(context, DeskMotion.launch),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, _) => LinearProgressIndicator(
+                    value: MediaQuery.disableAnimationsOf(context)
+                        ? fraction
+                        : value,
+                    minHeight: 7,
+                    backgroundColor: const Color(0xffded2f5),
+                    color: violet.ink,
+                    semanticsLabel: 'Weekly study progress',
+                    semanticsValue: '${(fraction * 100).round()}%',
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -232,7 +241,15 @@ class _StudyCard extends StatelessWidget {
               child: Checkbox(
                 key: ValueKey('done-${block.id}'),
                 value: completed,
-                onChanged: (_) => toggle(),
+                onChanged: (checked) {
+                  if (checked == null || checked == completed) return;
+                  if (checked) {
+                    DeskHaptics.confirm();
+                  } else {
+                    DeskHaptics.selection();
+                  }
+                  toggle();
+                },
                 activeColor: green.ink,
               ),
             ),
