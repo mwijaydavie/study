@@ -152,7 +152,7 @@ class _StudyCoachPageState extends State<StudyCoachPage>
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const MetaLabel(Icons.today_outlined, 'LEO · EAT', color: violet.ink),
+        MetaLabel(Icons.today_outlined, 'LEO · EAT', color: violet.ink),
         const SizedBox(height: 6),
         Text(
           'Dakika ${day.totalMinutes}',
@@ -367,7 +367,7 @@ class _StudyCoachPageState extends State<StudyCoachPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const MetaLabel(
+                    MetaLabel(
                       Icons.lock_outline_rounded,
                       'Kwenye simu hii tu',
                       color: green.ink,
