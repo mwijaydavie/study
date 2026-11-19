@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'coach/study_journal.dart';
 import 'study_data.dart';
 
-/// Only the small personal preferences and checklist are writable. The school
-/// timetable is shipped as a separate, read-only snapshot.
+/// Personal settings, checklist and a local study log never change the bundled
+/// school timetable.
 class Workspace extends ChangeNotifier {
-  Workspace(this._preferences) {
+  Workspace(this._preferences) : studyJournal = StudyJournal(_preferences) {
     final settings = _read(_settingsKey);
     use24Hour = settings['use24Hour'] != false;
     defaultView = settings['view'] == 'week'
@@ -25,6 +26,7 @@ class Workspace extends ChangeNotifier {
   static const _settingsKey = 'studydesk.native.settings.v1';
   static const _progressKey = 'studydesk.native.checklist.v1';
   final SharedPreferences? _preferences;
+  final StudyJournal studyJournal;
   bool _disposed = false;
   bool canSave = false;
   bool use24Hour = true;
@@ -108,6 +110,7 @@ class Workspace extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    studyJournal.dispose();
     super.dispose();
   }
 }

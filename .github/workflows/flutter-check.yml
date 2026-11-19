@@ -86,6 +86,7 @@ jobs:
           "$tools/apksigner" verify --print-certs "$apk"
           "$tools/zipalign" -c -P 16 4 "$apk"
           python3 scripts/check-android-elf.py "$apk"
+          python3 scripts/check-apk-welcome.py "$apk"
       - name: Prepare the test APK and checksum
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         run: |

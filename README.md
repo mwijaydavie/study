@@ -40,7 +40,9 @@ The installed app opens from its cached release first, even on a poor connection
 
 The [personal Flutter app](mobile/README.md) in `mobile/` bundles the timetable, study plan and materials independently of the web preview. Run `npm run flutter:sync` when updating shared content, then rebuild the native app. On Android, **Settings → Class reminders** saves an inexact notification for a confirmed class date. **Settings → Campus events** adds manually entered offline events, optional StudyDesk notifications, and an optional Calendar editor or `.ics` handoff without reading your calendars. **Materials → My files** imports your own PDF, Word and PowerPoint copies offline; [Cloudinary backup is planned, not connected](docs/cloudinary-documents.md).
 
-The [GitHub debug APK build](mobile/README.md#android-17-and-apk-from-github) passed. The next gate is the [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check), not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and AI separate. The PWA remains the web edition.
+**Study plan → Study Coach** records minutes and quiz totals by EAT day on the device. **Materials → FN200** has guides from both Finance handouts and the Coach has cited practice questions. Android also has optional spoken welcomes. [Online AI is not enabled](docs/study-coach-ai.md); no provider keys or private files are bundled.
+
+The [GitHub debug APK build](mobile/README.md#android-17-and-apk-from-github) for `0.4.0+4` passed; it predates the motion and Study Coach changes. The [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check) is not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and online AI separate. The PWA remains the web edition.
 
 ## Future UAUT Connect pilot
 

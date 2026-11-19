@@ -20,7 +20,11 @@ const folders = [
     { href: downloads.print, label: 'BIT Year 2 weekly timetable', meta: 'Print-friendly · PDF' },
     { href: downloads.planner, label: 'BIT Year 2 study planner', meta: 'Editable Word document · DOCX' },
   ] },
-  ...['CS243', 'IS237', 'ST119', 'FN200'].map((id) => ({ id, ...courses[id], description: courses[id].focus, items: [] })),
+  { id: 'FN200', ...courses.FN200, description: 'Finance decisions, agency problems and the two sides of a financial instrument.', items: [
+    { guide: 'finance-function', label: 'The finance function', meta: 'Study guide · decisions, liquidity and agency' },
+    { guide: 'finance-instruments', label: 'Financial instruments', meta: 'Study guide · assets, liabilities and equity' },
+  ] },
+  ...['CS243', 'IS237', 'ST119'].map((id) => ({ id, ...courses[id], description: courses[id].focus, items: [] })),
 ];
 const filters = [{ id: '', label: 'All folders' }, ...folders.map(({ id }) => ({ id, label: ({ networking: 'Networking', tools: 'Downloads' })[id] ?? id }))];
 

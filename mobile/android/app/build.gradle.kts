@@ -19,6 +19,11 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    androidResources {
+        // The greeting player opens a seekable raw-resource descriptor.
+        noCompress += "mp3"
+    }
+
     defaultConfig {
         applicationId = "tz.altraware.studydesk"
         // You can update the following values to match your application needs.

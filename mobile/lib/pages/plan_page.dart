@@ -13,11 +13,13 @@ class PlanPage extends StatelessWidget {
     required this.clock,
     required this.workspace,
     required this.openFolder,
+    required this.openCoach,
   });
   final StudyData data;
   final CampusClock clock;
   final Workspace workspace;
   final ValueChanged<String> openFolder;
+  final VoidCallback openCoach;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,24 @@ class PlanPage extends StatelessWidget {
           background: violet.surface,
           accent: violet.ink,
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 12),
+        DeskCard(
+          padding: EdgeInsets.zero,
+          child: ListTile(
+            key: const Key('open-study-coach'),
+            leading: const DeskGlyph(Icons.auto_stories_outlined, tones: gold),
+            title: Text(
+              'Study Coach',
+              style: deskType(14, weight: FontWeight.w800),
+            ),
+            subtitle: const Text(
+              'Umesoma nini leo? Rekodi dakika au jibu quiz ya FN200.',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: openCoach,
+          ),
+        ),
+        const SizedBox(height: 12),
         DeskCard(
           color: violet.surface,
           border: const Color(0xffe4d8fa),

@@ -40,7 +40,7 @@ For future builds:
 
 ### Keep updates compatible before storing real documents
 
-A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+5` for the motion changes) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
+A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+6` for Study Coach and spoken welcomes) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
 
 For stable personal **test** builds, choose one debug keystore (the same one that signed any build you need to update). If starting fresh, you can generate a test-only key locally, outside the repo:
 
@@ -60,6 +60,14 @@ This update is separate from the verified `0.4.0+4` APK above. After building th
 Tabs and timetable selections have short content transitions; checklist progress eases to the latest total. Detail sheets use the platform's drag and Back behavior. Touch feedback is limited to changed selections, checklist actions and a successful local document import. It uses system touch effects, not a vibration permission or a background alert. Android can suppress them if touch feedback is off or an effect is unsupported. Flutter's custom transitions skip when the device requests reduced motion.
 
 **Phone check for this build:** Cold-start the app in airplane mode and look for the book-to-timetable handoff without a blank flash or extra wait. Switch tabs quickly, change Day/Week and the selected day, open and drag-dismiss a class sheet, then tick and untick a dummy checklist task. Confirm only changed selections give a small touch effect. Repeat with **Remove animations** on and system touch feedback off. Check large text and both gesture and three-button navigation where available. Physical animation timing and haptic feel are not verified by widget tests.
+
+## Spoken welcome and Study Coach (`0.6.0+6`)
+
+- **Android welcome:** Five short, pre-generated clips play in rotation when the workspace is ready on a fresh launch or after at least 12 seconds away in the background. Short overlays and rebuilds do not restart playback. The app uses the device's media volume/route, skips silent or vibrate mode and detected active music, and stops on leaving the foreground or losing audio focus. **Settings → Spoken welcome** turns automatic speech off, with **Preview next greeting** for an explicit listen. The clips work offline; there is no microphone or live TTS service.
+- **Study plan → Study Coach:** Enter the minutes actually studied for a course today. Editing replaces that course's daily total; `0` removes it. Quiz totals are recorded after **Check answer**. Dates follow EAT, up to 90 recorded dates stay on-device, and **Clear study history** is separate from the weekly checklist. No background study tracking.
+- **Materials → FN200** has new guides from both Finance PDFs. The Coach draws five questions from a 12-question offline bank, shows explanations and exact PDF page references, and lists missed items to review. The original handouts are not bundled; add your copies under **Materials → My files → Add file** if you want to read them on your phone. A [live AI connection](../docs/study-coach-ai.md) is not enabled; configure credentials only on an authenticated backend.
+
+**Phone check:** In airplane mode, cold-start twice with normal audio and listen for different clips. Background the app during playback, return after 12 seconds, then try a quick overlay. Try the off switch, media mute/silent mode, and playing existing audio. In Study Coach record dummy minutes, finish a quiz, and relaunch offline to check that today's counts and source references persist. Clear the dummy history at the end. An automated build cannot verify playback or actual volume on this handset.
 
 ## Phase 1 phone check
 

@@ -34,5 +34,53 @@
       { "title": "03 / FLSM vs. VLSM", "body": "FLSM uses the same prefix length for every subnet. VLSM uses different prefix lengths to fit different needs. Try placing the largest block first and check alignment before assigning the smaller blocks." }
     ],
     "exercise": "List the host range and broadcast for 192.168.1.128/26, then explain the difference between having 64 addresses and 62 usable hosts."
+  },
+  "finance-function": {
+    "title": "The finance function",
+    "source": "THE FINANCE FUNCTION.pdf · PDF pp. 2–21, 23–39",
+    "intro": "Finance is about how money is raised, used and controlled. A profitable business can still be short of cash when bills fall due.",
+    "sections": [
+      {
+        "title": "01 / Profit, liquidity and value · pp. 5–8",
+        "body": "Profit compares revenue with expenses. Liquidity asks whether short-term obligations can be paid when they fall due. Wealth maximisation is about the long-term value of the owners’ investment, not just this month’s profit."
+      },
+      {
+        "title": "02 / Three decisions · pp. 12–15",
+        "body": "Choosing to buy a machine is an investment decision; deciding whether to borrow or use retained profits to pay for it is a financing decision. A dividend decision determines what profit to distribute to shareholders rather than keep in the business."
+      },
+      {
+        "title": "03 / Keep operations funded · pp. 16–21",
+        "body": "Monitor incoming and outgoing cash. Manage stock, money customers owe and short-term supplier bills together. Compare actual spending to the budget, then investigate gaps instead of assuming the plan was met."
+      },
+      {
+        "title": "04 / Owners and managers · pp. 23–32",
+        "body": "Shareholders are principals who delegate to managers as agents. Their incentives can differ, and managers may know more about operations. The resulting information gap makes oversight important."
+      },
+      {
+        "title": "05 / Reducing agency problems · pp. 34–39",
+        "body": "Oversight such as an independent audit is a monitoring cost. Commitments managers make can create bonding costs. Residual loss is the value still lost after controls. A capable board, transparent reporting and well-designed incentives can reduce the conflict."
+      }
+    ],
+    "exercise": "A shop makes a profit on credit sales, but its supplier needs payment today. Explain the liquidity issue, one short-term response and how you would monitor it."
+  },
+  "finance-instruments": {
+    "title": "Financial instruments",
+    "source": "AN OVERVIEW OF FINANCE INSTRUMENTS.pdf · PDF pp. 2–8",
+    "intro": "Start with the contract, then identify whose perspective you are using. One party’s financial asset can correspond to another party’s liability or equity instrument.",
+    "sections": [
+      {
+        "title": "01 / A contract has two sides · pp. 2–5",
+        "body": "Businesses can raise funds with a loan, bonds or shares. Ask who receives a right and who takes on an obligation or issues an ownership interest; then classify the instrument for each party."
+      },
+      {
+        "title": "02 / Right versus obligation · pp. 6–7",
+        "body": "A bank’s contractual right to collect loan payments is a financial asset for the bank. For the borrower, the contractual obligation to pay is a financial liability. Cash itself is also a financial asset."
+      },
+      {
+        "title": "03 / Residual interest · p. 8",
+        "body": "Ordinary shares represent an ownership claim on what remains after the company’s liabilities. The terms matter: the handout says certain qualifying non-redeemable preference shares, not every preference share, are equity."
+      }
+    ],
+    "exercise": "Draw two columns, investor and issuer. Compare a bond’s repayment right and obligation with the ownership interest in ordinary shares."
   }
 }

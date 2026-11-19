@@ -1,7 +1,7 @@
 name: studydesk
 publish_to: none
 description: Mwijay's offline-first personal StudyDesk for UAUT BIT Year 2.
-version: 0.5.0+5
+version: 0.6.0+6
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
@@ -23,6 +23,7 @@ flutter:
     - assets/data/semester.json
     - assets/data/plan.json
     - assets/data/guides.json
+    - assets/data/finance-quiz.json
     - assets/art/app-mark.png
     - assets/art/planner.webp
     - assets/downloads/bit-year-2-timetable.pdf

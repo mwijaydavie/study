@@ -13,12 +13,14 @@ import 'pages/campus_events_page.dart';
 import 'pages/materials_page.dart';
 import 'pages/plan_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/study_coach_page.dart';
 import 'pages/timetable_page.dart';
 import 'reminders/reminder_plan.dart';
 import 'reminders/reminders.dart';
 import 'study_data.dart';
 import 'ui/desk_launch.dart';
 import 'ui/desk_motion.dart';
+import 'ui/welcome_voice.dart';
 import 'workspace.dart';
 
 void main() {
@@ -54,6 +56,7 @@ class _BootPageState extends State<_BootPage> {
   Workspace? _workspace;
   ReminderController? _reminders;
   CampusEventBook? _campusEvents;
+  WelcomeVoice? _welcomeVoice;
 
   @override
   void initState() {
@@ -80,6 +83,7 @@ class _BootPageState extends State<_BootPage> {
       _workspace = Workspace(prefs);
       _campusEvents = events;
       if (android) {
+        _welcomeVoice = WelcomeVoice(prefs, const AndroidWelcomePlayer());
         _reminders = ReminderController(
           plan: ClassReminderPlan(data),
           platform: AndroidReminderPlatform(),
@@ -96,6 +100,7 @@ class _BootPageState extends State<_BootPage> {
   void dispose() {
     _reminders?.dispose();
     _campusEvents?.dispose();
+    _welcomeVoice?.dispose();
     _workspace?.dispose();
     super.dispose();
   }
@@ -110,6 +115,7 @@ class _BootPageState extends State<_BootPage> {
               data: snapshot.data!,
               workspace: _workspace!,
               reminders: _reminders,
+              welcomeVoice: _welcomeVoice,
               documents:
                   !kIsWeb && defaultTargetPlatform == TargetPlatform.android
                   ? const AndroidDocumentLibrary()
@@ -127,12 +133,14 @@ class DeskHome extends StatefulWidget {
     required this.workspace,
     this.reminders,
     this.documents,
+    this.welcomeVoice,
     this.now = DateTime.now,
   });
   final StudyData data;
   final Workspace workspace;
   final ReminderController? reminders;
   final DocumentLibrary? documents;
+  final WelcomeVoice? welcomeVoice;
   final DateTime Function() now;
 
   @override
@@ -154,6 +162,15 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     _startClockUpdates();
     _reminderTaps = widget.reminders?.opened.listen((_) => _openReminderTap());
     _syncReminders();
+    if (widget.welcomeVoice != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        widget.welcomeVoice?.ready(
+          WidgetsBinding.instance.lifecycleState,
+          widget.now(),
+        );
+      });
+    }
   }
 
   void _syncReminders() {
@@ -222,6 +239,7 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    widget.welcomeVoice?.lifecycle(state, widget.now());
     if (state == AppLifecycleState.resumed) {
       _refreshTime();
       _startClockUpdates();
@@ -249,6 +267,16 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     });
   }
 
+  void _openCoach() => Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      builder: (_) => StudyCoachPage(
+        data: widget.data,
+        journal: widget.workspace.studyJournal,
+        now: widget.now,
+      ),
+    ),
+  );
+
   Widget _destination() => switch (_tab) {
     0 => TimetablePage(
       data: widget.data,
@@ -262,18 +290,21 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
       clock: _clock,
       workspace: widget.workspace,
       openFolder: _openFolder,
+      openCoach: _openCoach,
     ),
     2 => MaterialsPage(
       data: widget.data,
       clock: _clock,
       initialFolder: _folder,
       documents: widget.documents,
+      openCoach: _openCoach,
     ),
     _ => SettingsPage(
       data: widget.data,
       clock: _clock,
       workspace: widget.workspace,
       reminders: widget.reminders,
+      welcomeVoice: widget.welcomeVoice,
     ),
   };
 

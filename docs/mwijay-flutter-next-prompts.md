@@ -15,7 +15,8 @@
 - [ ] **Android 17 My files and update check:** use [dummy documents](../mobile/README.md#my-files--android-17-phone-check). Set up a persistent test signing key and verify a same-key update before relying on in-app storage.
 - [ ] **4 · Optional stronger alarms**
 - [ ] **5 · Private TZS budget**
-- [ ] **6 · Offline study helper and opt-in AI**
+- [x] **6 · Offline Coach source:** personal spoken welcomes, manual EAT study log and cited FN200 practice. [Build notes and phone check](../mobile/README.md#spoken-welcome-and-study-coach-0606).
+- [ ] **6 · Study Coach phone check and opt-in online AI:** [owner-only setup](study-coach-ai.md). Online model is not configured.
 - [ ] **7 · Personal release and update check**
 
 ## 2 · Local class notifications

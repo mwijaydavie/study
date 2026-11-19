@@ -6,6 +6,7 @@ const assets = new Map([
   ['src/data/semester.json', 'data/semester.json'],
   ['src/data/plan.json', 'data/plan.json'],
   ['src/data/guides.json', 'data/guides.json'],
+  ['src/data/finance-quiz.json', 'data/finance-quiz.json'],
   ['public/art/planner.webp', 'art/planner.webp'],
   ['public/icons/icon-192.png', 'art/app-mark.png'],
   ['public/downloads/bit-year-2-timetable.pdf', 'downloads/bit-year-2-timetable.pdf'],
