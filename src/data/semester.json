@@ -1,0 +1,32 @@
+{
+  "institution": "United African University of Tanzania",
+  "program": "BSc in Business Information Technology",
+  "cohort": "BIT Year 2",
+  "year": "2026/27",
+  "term": "Semester 1",
+  "timezone": "Africa/Dar_es_Salaam",
+  "source": "CoEIT_BIT_Weekly_Class_Timetable_2026_2027 UPDATED REVISED DRAFT.pdf",
+  "sourcePage": 2,
+  "courses": {
+    "CS243": { "title": "Computer Design and Administration", "tone": "blue", "lecturer": "Mr. Florian", "focus": "Turn the latest lecture into a short diagram or a step-by-step admin checklist." },
+    "IS274": { "title": "Object-Oriented Analysis and Design", "tone": "violet", "lecturer": "Mr. Gambadu", "focus": "Write one use case for a campus app and sketch the classes it needs." },
+    "IS264": { "title": "Principles of Database Systems", "tone": "green", "lecturer": "Mr. Jonas", "focus": "Sketch the relationships first, then test a join with a few rows of sample data." },
+    "ST119": { "title": "Operations Research I", "tone": "peach", "lecturer": "Mr. Nyamu", "focus": "Translate a short problem into decision variables, an objective, and constraints." },
+    "IS237": { "title": "Data Abstraction and Algorithms", "tone": "violet", "lecturer": "Mr. Gambadu", "focus": "Trace an algorithm on a small input and explain why the output is correct." },
+    "FN200": { "title": "Principles of Finance", "tone": "green", "lecturer": "Mr. James", "focus": "Work a small finance problem by hand, showing your formula, units, and assumptions." }
+  },
+  "sessions": [
+    { "id": "mon-cs243", "day": 1, "start": "08:00", "end": "11:00", "code": "CS243", "kind": "lecture", "venue": "BH302" },
+    { "id": "mon-is274", "day": 1, "start": "11:00", "end": "14:00", "code": "IS274", "kind": "lecture", "venue": "BH302" },
+    { "id": "tue-is264", "day": 2, "start": "11:00", "end": "14:00", "code": "IS264", "kind": "lecture", "venue": "BH301" },
+    { "id": "tue-st119", "day": 2, "start": "14:00", "end": "15:30", "code": "ST119", "kind": "practical", "venue": "Computer Lab" },
+    { "id": "wed-is264", "day": 3, "start": "08:00", "end": "09:30", "code": "IS264", "kind": "practical", "venue": "Computer Lab" },
+    { "id": "wed-chapel", "day": 3, "start": "11:00", "end": "12:00", "code": null, "kind": "chapel", "venue": "Church Venue" },
+    { "id": "wed-is237", "day": 3, "start": "14:00", "end": "17:00", "code": "IS237", "kind": "lecture", "venue": "BH301" },
+    { "id": "thu-is237", "day": 4, "start": "08:00", "end": "09:30", "code": "IS237", "kind": "practical", "venue": "Computer Lab" },
+    { "id": "thu-fn200", "day": 4, "start": "11:00", "end": "14:00", "code": "FN200", "kind": "lecture", "venue": "BH301" },
+    { "id": "fri-st119", "day": 5, "start": "08:00", "end": "11:00", "code": "ST119", "kind": "lecture", "venue": "BH302" },
+    { "id": "fri-is274", "day": 5, "start": "11:00", "end": "14:00", "code": "IS274", "kind": "practical", "venue": "BH301" },
+    { "id": "fri-cs243", "day": 5, "start": "14:00", "end": "15:30", "code": "CS243", "kind": "practical", "venue": "Computer Lab" }
+  ]
+}
