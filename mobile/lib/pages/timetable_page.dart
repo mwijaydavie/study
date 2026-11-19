@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../design.dart';
-import '../reminders/reminder_plan.dart';
 import '../reminders/reminders.dart';
 import '../study_data.dart';
 import '../study_files.dart';

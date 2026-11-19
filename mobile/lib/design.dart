@@ -139,7 +139,7 @@ class DeskHero extends StatelessWidget {
     required this.icon,
     this.art = false,
     this.background = DeskColors.gold,
-    this.accent = Color(0xff865b10),
+    this.accent = const Color(0xff865b10),
   });
   final String title;
   final String caption;
