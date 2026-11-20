@@ -13,8 +13,10 @@ import 'package:studydesk/pages/finance_quiz_page.dart';
 import 'package:studydesk/study_data.dart';
 import 'package:studydesk/workspace.dart';
 
+import 'support/static_desk_motion.dart';
+
 Future<void> _tap(WidgetTester tester, Finder target) async {
-  await tester.ensureVisible(target);
+  await Scrollable.ensureVisible(tester.element(target), alignment: .15);
   await tester.tap(target);
   await tester.pumpAndSettle();
 }
@@ -49,13 +51,18 @@ void main() {
   test(
     'FN200 practice alternates sources and rejects invalid PDF references',
     () async {
-      expect(bank.sources.values.map((source) => source.pageCount), [39, 8]);
-      expect(bank.questions, hasLength(12));
+      expect(bank.sources.values.map((source) => source.pageCount), [
+        39,
+        8,
+        30,
+      ]);
+      expect(bank.questions, hasLength(18));
       final mixed = bank.practice(random: Random(7));
       expect(mixed, hasLength(5));
       expect(mixed.map((question) => question.source.id).toSet(), {
         'function',
         'instruments',
+        'risk-return',
       });
       expect(mixed.map((question) => question.id).toSet(), hasLength(5));
       expect(
@@ -140,11 +147,13 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: deskTheme(),
+          builder: staticDeskMotion,
           home: DeskHome(data: data, workspace: workspace, now: () => morning),
         ),
       );
       await tester.pumpAndSettle();
-      await _tap(tester, find.text('Study plan'));
+      await _tap(tester, find.byKey(const Key('nav-plan')));
+      await _tap(tester, find.byKey(const Key('plan-checklist')));
       await _tap(tester, find.byKey(const Key('open-study-coach')));
       expect(find.text('Dakika 0'), findsOneWidget);
       final input = find.byKey(const Key('coach-minutes'));

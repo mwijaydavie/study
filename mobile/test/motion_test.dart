@@ -13,9 +13,15 @@ const _selection = 'HapticFeedbackType.selectionClick';
 const _confirm = 'HapticFeedbackType.lightImpact';
 
 Future<void> _tap(WidgetTester tester, Finder target) async {
-  await tester.ensureVisible(target);
+  await Scrollable.ensureVisible(tester.element(target), alignment: .15);
   await tester.tap(target);
-  await tester.pumpAndSettle();
+  await _settleDesk(tester);
+}
+
+Future<void> _settleDesk(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 700));
+  await tester.pump(const Duration(milliseconds: 100));
 }
 
 void main() {
@@ -126,20 +132,21 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await _settleDesk(tester);
       expect(calls, isEmpty);
+      await _tap(tester, find.byKey(const Key('nav-plan')));
       await _tap(tester, find.text('Week'));
       await _tap(tester, find.text('Week'));
       await _tap(tester, find.text('Day'));
       await _tap(tester, find.text('Mon'));
       await _tap(tester, find.text('Mon'));
-      expect(calls, [_selection, _selection, _selection]);
+      expect(calls, List.filled(4, _selection));
 
-      await _tap(tester, find.text('Study plan'));
-      await _tap(tester, find.text('Study plan'));
+      await _tap(tester, find.byKey(const Key('plan-checklist')));
+      await _tap(tester, find.byKey(const Key('plan-checklist')));
       expect(find.text('Class schedule'), findsNothing);
       final task = find.byKey(const ValueKey('done-ooad'));
-      await tester.ensureVisible(task);
+      await Scrollable.ensureVisible(tester.element(task), alignment: .15);
       await tester.tap(task);
       await tester.pump();
       final progress = find.byType(LinearProgressIndicator);
@@ -147,14 +154,14 @@ void main() {
         tester.widget<LinearProgressIndicator>(progress).value,
         lessThan(1 / 6),
       );
-      await tester.pumpAndSettle();
+      await _settleDesk(tester);
       expect(tester.widget<LinearProgressIndicator>(progress).value, 1 / 6);
-      expect(calls, [_selection, _selection, _selection, _selection, _confirm]);
+      expect(calls, [...List.filled(5, _selection), _confirm]);
 
       await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle();
-      expect(find.text('Class schedule'), findsOneWidget);
-      expect(calls, hasLength(5));
+      await _settleDesk(tester);
+      expect(find.text('Your day at a glance'), findsOneWidget);
+      expect(calls, hasLength(6));
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     },

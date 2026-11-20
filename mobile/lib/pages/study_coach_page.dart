@@ -13,11 +13,13 @@ class StudyCoachPage extends StatefulWidget {
     required this.data,
     required this.journal,
     required this.now,
+    this.initialSource,
   });
 
   final StudyData data;
   final StudyJournal journal;
   final DateTime Function() now;
+  final String? initialSource;
 
   @override
   State<StudyCoachPage> createState() => _StudyCoachPageState();
@@ -30,7 +32,10 @@ class _StudyCoachPageState extends State<StudyCoachPage>
       : widget.data.courses.keys.first;
   final _minutes = TextEditingController();
   late String _editingDay;
-  String? _source;
+  late String? _source =
+      widget.data.financeQuiz?.sources.containsKey(widget.initialSource) == true
+      ? widget.initialSource
+      : null;
   String? _error;
 
   String _dayAt(DateTime at) => campusDayKey(campusDayOf(at));
@@ -247,7 +252,7 @@ class _StudyCoachPageState extends State<StudyCoachPage>
         children: [
           const SectionTitle(
             'Tujipime · FN200',
-            'Maswali ya offline kutoka PDF mbili. Kila jibu lina maelezo na rejea ya ukurasa.',
+            'Maswali ya offline kutoka handout za FN200. Kila jibu lina maelezo na rejea ya ukurasa.',
           ),
           const SizedBox(height: 9),
           if (bank == null)

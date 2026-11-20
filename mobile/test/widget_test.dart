@@ -33,9 +33,10 @@ void main() {
       MaterialApp(
         theme: deskTheme(),
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+            disableAnimations: true,
+          ),
           child: child!,
         ),
         home: DeskHome(
@@ -51,7 +52,7 @@ void main() {
   }
 
   Future<void> next(WidgetTester tester, Finder finder) async {
-    await tester.ensureVisible(finder);
+    await Scrollable.ensureVisible(tester.element(finder), alignment: .15);
     await tester.tap(finder);
     await tester.pumpAndSettle();
   }
@@ -60,6 +61,7 @@ void main() {
     tester,
   ) async {
     final workspace = await open(tester);
+    await next(tester, find.byKey(const Key('nav-plan')));
     expect(find.text('Thursday'), findsOneWidget);
     expect(find.text('Principles of Finance'), findsOneWidget);
     expect(find.text('OFFLINE READY'), findsOneWidget);
@@ -67,12 +69,12 @@ void main() {
     expect(find.text('Thursday · 08:00–09:30 EAT'), findsOneWidget);
     expect(find.text('Mr. Gambadu'), findsWidgets);
     await next(tester, find.byTooltip('Close'));
-    await next(tester, find.text('Settings'));
+    await next(tester, find.byKey(const Key('nav-settings')));
     await next(tester, find.byKey(const Key('use-24-hour')));
     await next(tester, find.byKey(const Key('default-week-view')));
     expect(workspace.use24Hour, false);
     expect(workspace.defaultView, ScheduleView.week);
-    await next(tester, find.text('Timetable'));
+    await next(tester, find.byKey(const Key('nav-plan')));
     expect(find.text('Monday'), findsOneWidget);
     expect(find.text('8:00 AM'), findsWidgets);
     expect(tester.takeException(), isNull);
@@ -83,14 +85,15 @@ void main() {
     tester,
   ) async {
     final workspace = await open(tester);
-    await next(tester, find.text('Study plan'));
+    await next(tester, find.byKey(const Key('nav-plan')));
+    await next(tester, find.byKey(const Key('plan-checklist')));
     await next(tester, find.byKey(const ValueKey('done-ooad')));
     expect(find.text('1 / 6 done'), findsOneWidget);
-    await next(tester, find.text('Settings'));
+    await next(tester, find.byKey(const Key('nav-settings')));
     await next(tester, find.text('Clear this week’s checklist'));
     await next(tester, find.text('Clear checklist'));
     expect(workspace.doneFor('2026-11-16'), isEmpty);
-    await next(tester, find.text('Materials'));
+    await next(tester, find.byKey(const Key('nav-materials')));
     await tester.enterText(find.byType(TextField), 'subnetting');
     await tester.pumpAndSettle();
     await next(tester, find.text('Unit II — Subnetting'));
@@ -104,12 +107,14 @@ void main() {
     tester,
   ) async {
     await open(tester, size: const Size(320, 740), textScale: 1.6);
-    expect(find.byType(NavigationDestination), findsNWidgets(4));
-    await next(tester, find.text('Settings'));
+    for (final tab in ['home', 'plan', 'materials', 'settings', 'ai']) {
+      expect(find.byKey(ValueKey('nav-$tab')), findsOneWidget);
+    }
+    await next(tester, find.byKey(const Key('nav-settings')));
     expect(find.text('Offline & privacy'), findsOneWidget);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
-    expect(find.text('Class schedule'), findsOneWidget);
+    expect(find.text('Your day at a glance'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -131,6 +136,7 @@ void main() {
       final reminders = android(phone);
       await open(tester, reminders: reminders);
       expect(phone.permissionRequests, 0);
+      await next(tester, find.byKey(const Key('nav-plan')));
       await next(tester, find.text('Details'));
       await next(tester, find.byKey(const Key('remind-from-class-details')));
       expect(find.text('Target: Thu, 19 Nov 2026 · 07:45 EAT'), findsOneWidget);
@@ -138,7 +144,7 @@ void main() {
       await next(tester, find.byKey(const Key('confirm-class-reminder')));
       expect(phone.permissionRequests, 1);
       expect(phone.requests.keys.single, 'class:thu-is237:2026-11-19');
-      await next(tester, find.text('Settings'));
+      await next(tester, find.byKey(const Key('nav-settings')));
       await next(tester, find.byKey(const Key('class-reminders-settings')));
       expect(find.text('Pending reminders'), findsOneWidget);
       expect(
@@ -173,12 +179,12 @@ void main() {
     await open(tester, reminders: reminders);
     expect(find.text(when), findsOneWidget);
     await next(tester, find.byTooltip('Close'));
-    await next(tester, find.text('Settings'));
+    await next(tester, find.byKey(const Key('nav-settings')));
     await next(tester, find.byKey(const Key('class-reminders-settings')));
     phone.tap(tap);
     await tester.pumpAndSettle();
     expect(find.text(when), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byKey(const Key('personal-dock')), findsOneWidget);
     expect(phone.permissionRequests, 0);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());

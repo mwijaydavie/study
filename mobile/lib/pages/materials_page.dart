@@ -54,7 +54,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
         if (data.guides['sql'] case final guide?) _Resource.guide(guide),
       ],
       'FN200': [
-        for (final key in ['finance-function', 'finance-instruments'])
+        for (final key in financeGuideKeys)
           if (data.guides[key] case final guide?) _Resource.guide(guide),
       ],
     };

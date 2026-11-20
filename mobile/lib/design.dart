@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'app/theme/personal_yellow_theme.dart';
 import 'study_data.dart';
 import 'ui/desk_motion.dart';
 
 abstract final class DeskColors {
-  static const ink = Color(0xff222336);
-  static const muted = Color(0xff646574);
-  static const paper = Color(0xfff8f8f4);
+  static const ink = PersonalAppColors.inkObsidian;
+  static const muted = PersonalAppColors.inkMuted;
+  static const paper = PersonalAppColors.canvasWhite;
   // Match Android's studydesk_launch_surface for a continuous first frame.
   static const launchSurface = Color(0xfffbf4e1);
-  static const line = Color(0xffeae9e3);
+  static const line = Color(0xffeee6d6);
   static const gold = Color(0xffffe7a6);
   static const goldEdge = Color(0xffecc66b);
   static const midnight = Color(0xff242438);
-  static const white = Color(0xffffffff);
+  static const white = PersonalAppColors.pureWhite;
 }
 
 final deskSystemBars = SystemUiOverlayStyle.dark.copyWith(
@@ -61,27 +62,6 @@ ThemeData deskTheme() {
     fontFamily: 'PlusJakartaSans',
     scaffoldBackgroundColor: DeskColors.paper,
     dividerColor: DeskColors.line,
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: DeskColors.white,
-      surfaceTintColor: Colors.transparent,
-      indicatorColor: DeskColors.gold,
-      iconTheme: WidgetStateProperty.resolveWith(
-        (states) => IconThemeData(
-          size: 22,
-          color: states.contains(WidgetState.selected)
-              ? gold.ink
-              : DeskColors.muted,
-        ),
-      ),
-      labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => deskType(
-          10,
-          weight: states.contains(WidgetState.selected)
-              ? FontWeight.w800
-              : FontWeight.w700,
-        ),
-      ),
-    ),
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: DeskColors.midnight,
       behavior: SnackBarBehavior.floating,
@@ -100,7 +80,7 @@ class DeskPage extends StatelessWidget {
       MediaQuery.sizeOf(context).width < 345 ? 12 : 16,
       16,
       MediaQuery.sizeOf(context).width < 345 ? 12 : 16,
-      8,
+      8 + MediaQuery.paddingOf(context).bottom,
     ),
     child: Align(
       alignment: Alignment.topCenter,

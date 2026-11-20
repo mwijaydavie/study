@@ -16,6 +16,7 @@ FILES = {
 }
 # Optional, so an older set of uploads can still rebuild the library.
 FINANCE_FILES = {
+    'Risk and Return Analysis.pdf': 'FN200-finance/source/risk-and-return-analysis.pdf',
     'THE FINANCE FUNCTION.pdf': 'FN200-finance/source/the-finance-function.pdf',
     'AN OVERVIEW OF FINANCE INSTRUMENTS.pdf': 'FN200-finance/source/an-overview-of-finance-instruments.pdf',
 }

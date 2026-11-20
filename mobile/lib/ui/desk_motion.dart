@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 
 abstract final class DeskMotion {
   static const quick = Duration(milliseconds: 160);
-  static const section = Duration(milliseconds: 210);
+  static const section = Duration(milliseconds: 280);
+  static const solar = Cubic(.16, 1, .3, 1);
   static const launch = Duration(milliseconds: 260);
 
   static Duration durationOf(BuildContext context, Duration duration) =>
@@ -26,11 +27,13 @@ class DeskReveal extends StatelessWidget {
     required this.child,
     this.duration = DeskMotion.section,
     this.distance = 8,
+    this.slideFraction,
   });
 
   final Widget child;
   final Duration duration;
   final double distance;
+  final double? slideFraction;
 
   @override
   Widget build(BuildContext context) {
@@ -38,16 +41,21 @@ class DeskReveal extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: reduceMotion ? Duration.zero : duration,
-      curve: Curves.easeOutCubic,
+      curve: DeskMotion.solar,
       child: child,
       builder: (context, value, child) {
         final remaining = reduceMotion ? 0.0 : 1 - value;
         return Opacity(
           opacity: 1 - remaining * .28,
-          child: Transform.translate(
-            offset: Offset(0, remaining * distance),
-            child: child,
-          ),
+          child: slideFraction == null
+              ? Transform.translate(
+                  offset: Offset(0, remaining * distance),
+                  child: child,
+                )
+              : FractionalTranslation(
+                  translation: Offset(0, remaining * slideFraction!),
+                  child: child,
+                ),
         );
       },
     );
@@ -58,6 +66,8 @@ class DeskReveal extends StatelessWidget {
 /// and asks the OS for a touch effect rather than raw vibration.
 abstract final class DeskHaptics {
   static void selection() => unawaited(_play(HapticFeedback.selectionClick));
+
+  static void heavy() => unawaited(_play(HapticFeedback.heavyImpact));
 
   static void confirm() => unawaited(_play(HapticFeedback.lightImpact));
 
