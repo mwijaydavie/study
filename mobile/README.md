@@ -28,6 +28,8 @@ The native reminder, calendar and document tests can be run after the debug buil
 
 ## Android 17 and APK from GitHub
 
+**Current verified build: StudyDesk `0.7.0+7`.** The [branch checks](https://github.com/mwijaydavie/study/actions/runs/44665581944) passed the Flutter display and integration tests, Android debug build and JVM tests, APK ID/signature, 16 KiB alignment, and welcome-audio packaging. No `0.7.0+7` APK was attached in this verification run.
+
 **Prior verified build: StudyDesk `0.6.0+6`.** The [branch verification run](https://github.com/mwijaydavie/study/actions/runs/44491730115) passed the PWA and asset checks, Flutter analysis and tests, Android debug build and JVM tests. It checked the normal APK's package ID, signature, ARM64 and 16 KiB alignment, and all five uncompressed welcome clips. This run did not publish an APK.
 
 **Previous downloadable APK: `0.4.0+4` (`13f352b` on `main`).** The [main build](https://github.com/mwijaydavie/study/actions/runs/44454871933) attached `studydesk-android-debug`, containing `StudyDesk-debug.apk` and its SHA-256 checksum, until **26 November 2026**. It uses the runner's debug key, not a persistent test signing key, and does not include spoken welcomes or Study Coach.
@@ -48,7 +50,7 @@ If Mwijay approves a **public test download**, a manual run on a non-`main` bran
 
 ### Keep updates compatible before storing real documents
 
-A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+6` for Study Coach and spoken welcomes) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
+A GitHub-hosted runner's default debug key can change on each run. Android will reject an in-place update signed with a different key. If this is only a first smoke install, use dummy data. Before depending on updates, keep `tz.altraware.studydesk`, use the **same signing key**, and increase the build number (`+7` for Solar Home and the new FN200 guide) for future versions. Back up your originals outside StudyDesk; reinstalling is not an update.
 
 For stable personal **test** builds, choose one debug keystore (the same one that signed any build you need to update). If starting fresh, you can generate a test-only key locally, outside the repo:
 

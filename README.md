@@ -42,7 +42,7 @@ The [personal Flutter app](mobile/README.md) in `mobile/` bundles the timetable,
 
 **Home** shows today’s campus activity, quick capture and pinned notes. The yellow-and-white floating dock has **Home**, **Plan**, **Materials**, **Settings**, and a separate **AI** orb. Tap the orb for supported offline lookups; hold it for AI Settings. **Plan → Study checklist → Study Coach** records study minutes and quiz totals by EAT day. **Materials → FN200** has three guides, including *Risk and return analysis*, and 18 cited questions. Android also has optional spoken welcomes. [Online AI is not enabled](docs/study-coach-ai.md); no provider keys or private files are bundled.
 
-The [automated Android build and APK checks](mobile/README.md#android-17-and-apk-from-github) passed on the `0.6.0+6` branch. This check did not publish an APK; the previous `0.4.0+4` download predates motion and Study Coach. The [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check) is not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and online AI separate. The PWA remains the web edition.
+The [automated Android build and APK checks](https://github.com/mwijaydavie/study/actions/runs/44665581944) passed for `0.7.0+7`. This verification did not publish an APK. The [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check) is not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and online AI separate. The PWA remains the web edition.
 
 ## Future UAUT Connect pilot
 

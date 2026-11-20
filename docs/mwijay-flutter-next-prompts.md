@@ -16,6 +16,7 @@
 - [ ] **4 · Optional stronger alarms**
 - [ ] **5 · Private TZS budget**
 - [x] **6 · Offline Coach source and build checks:** personal spoken welcomes, manual EAT study log and cited FN200 practice. The `0.6.0+6` Android build and clip packaging passed automatically. [Build notes and phone check](../mobile/README.md#spoken-welcome-and-study-coach-0606).
+- [x] **Solar Home and FN200 update:** `0.7.0+7` adds the floating dock, note capture and the Risk and Return guide and practice filter. [Automated verification](https://github.com/mwijaydavie/study/actions/runs/44665581944) passed; the [display and capture phone check](../mobile/README.md#solar-home-floating-dock-and-offline-assistant-0707) is still open.
 - [ ] **6 · Study Coach phone check and opt-in online AI:** [owner-only setup](study-coach-ai.md). Online model is not configured.
 - [ ] **7 · Personal release and update check**
 
