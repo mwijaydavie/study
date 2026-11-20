@@ -20,9 +20,10 @@ const folders = [
     { href: downloads.print, label: 'BIT Year 2 weekly timetable', meta: 'Print-friendly · PDF' },
     { href: downloads.planner, label: 'BIT Year 2 study planner', meta: 'Editable Word document · DOCX' },
   ] },
-  { id: 'FN200', ...courses.FN200, description: 'Finance decisions, agency problems and the two sides of a financial instrument.', items: [
+  { id: 'FN200', ...courses.FN200, description: 'Finance decisions, agency problems and financial instruments, and investment risk and return.', items: [
     { guide: 'finance-function', label: 'The finance function', meta: 'Study guide · decisions, liquidity and agency' },
     { guide: 'finance-instruments', label: 'Financial instruments', meta: 'Study guide · assets, liabilities and equity' },
+    { guide: 'finance-risk-return', label: 'Risk and return analysis', meta: 'Study guide · probabilities, expected return and types of risk' },
   ] },
   ...['CS243', 'IS237', 'ST119'].map((id) => ({ id, ...courses[id], description: courses[id].focus, items: [] })),
 ];

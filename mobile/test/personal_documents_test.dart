@@ -7,6 +7,8 @@ import 'package:studydesk/main.dart';
 import 'package:studydesk/study_data.dart';
 import 'package:studydesk/workspace.dart';
 
+import 'support/static_desk_motion.dart';
+
 const _dummy = PersonalDocument(
   id: '0123456789abcdef0123456789abcdef',
   name: 'Practice slides.pptx',
@@ -107,6 +109,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: deskTheme(),
+          builder: staticDeskMotion,
           home: DeskHome(
             data: data,
             workspace: workspace,
@@ -116,7 +119,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await _tap(tester, find.text('Materials'));
+      await _tap(tester, find.byKey(const Key('nav-materials')));
       await _tap(tester, find.byKey(const Key('personal-files-entry')));
       final add = find.byKey(const Key('pick-study-document'));
       await _tap(tester, add);

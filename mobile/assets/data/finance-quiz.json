@@ -2,7 +2,8 @@
   "version": 1,
   "sources": [
     { "id": "function", "title": "The finance function", "file": "THE FINANCE FUNCTION.pdf", "pageCount": 39 },
-    { "id": "instruments", "title": "Financial instruments", "file": "AN OVERVIEW OF FINANCE INSTRUMENTS.pdf", "pageCount": 8 }
+    { "id": "instruments", "title": "Financial instruments", "file": "AN OVERVIEW OF FINANCE INSTRUMENTS.pdf", "pageCount": 8 },
+    { "id": "risk-return", "title": "Risk and return", "file": "Risk and Return Analysis.pdf", "pageCount": 30 }
   ],
   "questions": [
     {
@@ -76,6 +77,42 @@
       "prompt": "What does the handout say about non-redeemable preference shares?",
       "choices": ["Certain ones qualify as equity if they meet its definition", "Every preference share is automatically equity", "No preference share can be an equity instrument"], "answer": 0,
       "explanation": "The notes qualify the example. Look at whether the terms meet the definition of an equity instrument, not just the share’s label."
+    },
+    {
+      "id": "return-range", "source": "risk-return", "pages": [7],
+      "prompt": "The highest return is 18% and the lowest is −4%. What is the range?",
+      "choices": ["14 percentage points", "22 percentage points", "11 percentage points"], "answer": 1,
+      "explanation": "Range is the highest minus the lowest. Subtracting a negative adds its magnitude: 18 − (−4) = 22 percentage points."
+    },
+    {
+      "id": "return-dispersion", "source": "risk-return", "pages": [8, 9, 11],
+      "prompt": "Two investments have the same average return, but A has more widely spread returns. Which measure directly reflects that dispersion around the average?",
+      "choices": ["The size of the investment", "The average return", "The standard deviation"], "answer": 2,
+      "explanation": "Standard deviation measures spread around the average. A higher standard deviation indicates more variation even when the averages match."
+    },
+    {
+      "id": "identify-fx-risk", "source": "risk-return", "pages": [19],
+      "prompt": "A Tanzanian importer owes the same amount in USD, but now needs more shillings to buy those dollars. Which risk occurred?",
+      "choices": ["Foreign exchange risk", "Credit risk", "Liquidity risk"], "answer": 0,
+      "explanation": "The payment in dollars did not change. Its shilling cost rose because the exchange rate changed."
+    },
+    {
+      "id": "operating-risk", "source": "risk-return", "pages": [18, 20, 21],
+      "prompt": "A business has no debt. Sales fall and operating costs rise. Which risk does this illustrate in the handout’s comparison?",
+      "choices": ["Financial risk from borrowing", "Business risk", "Foreign exchange risk"], "answer": 1,
+      "explanation": "Weak sales and higher costs affect operations even when there are no loan payments. The handout contrasts this with risk from borrowing."
+    },
+    {
+      "id": "weighted-expected-return", "source": "risk-return", "pages": [29, 30],
+      "prompt": "Use the handout’s outcomes: 50% chance of 20%, 30% chance of 10%, and 20% chance of −5%. What is the expected return?",
+      "choices": ["13%", "8⅓%", "12%"], "answer": 2,
+      "explanation": "Weight each return by its probability: 10% + 3% − 1% = 12%. The loss contributes −1 percentage point, not zero or +1."
+    },
+    {
+      "id": "expected-not-guaranteed", "source": "risk-return", "pages": [26, 27],
+      "prompt": "A project has an expected return of 12%. What can you conclude about the actual outcome?",
+      "choices": ["It may be above or below 12%", "It is guaranteed to be exactly 12%", "It cannot be a loss"], "answer": 0,
+      "explanation": "An expected return is an estimate rather than a guarantee. Actual cash flows can turn out better or worse."
     }
   ]
 }

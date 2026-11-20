@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'app/theme/personal_yellow_theme.dart';
 import 'campus/campus_calendar.dart';
 import 'campus/campus_events.dart';
+import 'core/widgets/personal_glass_nav_dock.dart';
 import 'design.dart';
 import 'documents/personal_documents.dart';
+import 'pages/assistant_page.dart';
 import 'pages/campus_events_page.dart';
+import 'pages/home_page.dart';
 import 'pages/materials_page.dart';
 import 'pages/plan_page.dart';
 import 'pages/settings_page.dart';
@@ -147,8 +151,11 @@ class DeskHome extends StatefulWidget {
   State<DeskHome> createState() => _DeskHomeState();
 }
 
+enum _PlanSection { timetable, checklist }
+
 class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
-  var _tab = 0;
+  var _tab = PersonalTab.home;
+  var _planSection = _PlanSection.timetable;
   var _folder = '';
   late CampusClock _clock;
   Timer? _timer;
@@ -186,7 +193,10 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     final opened = await reminders.takeOpenedReminder();
     if (opened == null || !mounted) return;
     Navigator.of(context).popUntil((route) => route.isFirst);
-    setState(() => _tab = opened.event == null ? 0 : 3);
+    setState(() {
+      _tab = opened.event == null ? PersonalTab.plan : PersonalTab.settings;
+      if (opened.event == null) _planSection = _PlanSection.timetable;
+    });
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
     final event = opened.event;
@@ -250,61 +260,192 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     }
   }
 
-  void _openFolder(String code) => setState(() {
-    _folder = code;
-    _tab = 2;
-  });
+  void _unfocus() => FocusManager.instance.primaryFocus?.unfocus();
 
-  void _selectDestination(int index) {
-    if (index != _tab) {
-      DeskHaptics.selection();
-    } else if (index != 2 || _folder.isEmpty) {
-      return;
-    }
+  void _openFolder(String code) {
+    _unfocus();
     setState(() {
-      _tab = index;
-      if (index == 2) _folder = '';
+      _folder = code;
+      _tab = PersonalTab.materials;
     });
   }
 
-  void _openCoach() => Navigator.of(context).push<void>(
+  void _selectDestination(PersonalTab next) {
+    if (next == _tab && (next != PersonalTab.materials || _folder.isEmpty))
+      return;
+    _unfocus();
+    setState(() {
+      _tab = next;
+      if (next == PersonalTab.materials) _folder = '';
+    });
+  }
+
+  void _openPlan(_PlanSection section) {
+    _unfocus();
+    setState(() {
+      _planSection = section;
+      _tab = PersonalTab.plan;
+    });
+  }
+
+  void _openCoach([String? source]) => Navigator.of(context).push<void>(
     MaterialPageRoute(
       builder: (_) => StudyCoachPage(
         data: widget.data,
         journal: widget.workspace.studyJournal,
         now: widget.now,
+        initialSource: source,
       ),
     ),
   );
 
-  Widget _destination() => switch (_tab) {
-    0 => TimetablePage(
-      data: widget.data,
-      clock: _clock,
-      workspace: widget.workspace,
-      openFolder: _openFolder,
-      reminders: widget.reminders,
+  void _openAiSettings() => _openAiRoute(
+    (_) => AiSettingsPage(
+      preferences: widget.workspace.assistant,
+      now: widget.now,
     ),
-    1 => PlanPage(
+  );
+
+  void _openAssistant([String query = '']) => _openAiRoute(
+    (route) => AssistantPage(
       data: widget.data,
-      clock: _clock,
       workspace: widget.workspace,
-      openFolder: _openFolder,
+      now: widget.now,
+      initialQuery: query,
+      openSettings: _openAiSettings,
       openCoach: _openCoach,
+      openSchedule: () {
+        Navigator.of(route).pop();
+        _openPlan(_PlanSection.timetable);
+      },
+      openFinance: () {
+        Navigator.of(route).pop();
+        _openFolder('FN200');
+      },
     ),
-    2 => MaterialsPage(
+  );
+
+  void _openAiRoute(WidgetBuilder builder) {
+    _unfocus();
+    Navigator.of(context).push<void>(
+      PageRouteBuilder(
+        transitionDuration: DeskMotion.durationOf(
+          context,
+          const Duration(milliseconds: 360),
+        ),
+        reverseTransitionDuration: DeskMotion.durationOf(
+          context,
+          DeskMotion.launch,
+        ),
+        pageBuilder: (context, _, _) => builder(context),
+        transitionsBuilder: (context, animation, _, child) {
+          if (MediaQuery.disableAnimationsOf(context)) return child;
+          final ease = animation.drive(CurveTween(curve: DeskMotion.solar));
+          return FadeTransition(
+            opacity: ease,
+            child: SlideTransition(
+              position: Tween(
+                begin: const Offset(0, .06),
+                end: Offset.zero,
+              ).animate(ease),
+              child: child,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _plan() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Align(
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 7, 12, 0),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 6,
+            runSpacing: 3,
+            children: [
+              for (final (section, label, icon) in [
+                (
+                  _PlanSection.timetable,
+                  'Timetable',
+                  Icons.calendar_month_outlined,
+                ),
+                (
+                  _PlanSection.checklist,
+                  'Study checklist',
+                  Icons.checklist_rounded,
+                ),
+              ])
+                ChoiceChip(
+                  key: ValueKey('plan-${section.name}'),
+                  label: Text(label),
+                  avatar: Icon(icon, size: 17),
+                  showCheckmark: false,
+                  selected: _planSection == section,
+                  onSelected: (selected) {
+                    if (!selected || _planSection == section) return;
+                    DeskHaptics.selection();
+                    _openPlan(section);
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+      Expanded(
+        child: ClipRect(
+          child: DeskReveal(
+            key: ValueKey(_planSection),
+            child: _planSection == _PlanSection.timetable
+                ? TimetablePage(
+                    data: widget.data,
+                    clock: _clock,
+                    workspace: widget.workspace,
+                    openFolder: _openFolder,
+                    reminders: widget.reminders,
+                  )
+                : PlanPage(
+                    data: widget.data,
+                    clock: _clock,
+                    workspace: widget.workspace,
+                    openFolder: _openFolder,
+                    openCoach: _openCoach,
+                  ),
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _destination() => switch (_tab) {
+    PersonalTab.home => HomePage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      openAssistant: _openAssistant,
+      openTimetable: () => _openPlan(_PlanSection.timetable),
+      openPlan: () => _openPlan(_PlanSection.checklist),
+      openFinance: () => _openFolder('FN200'),
+    ),
+    PersonalTab.plan => _plan(),
+    PersonalTab.materials => MaterialsPage(
       data: widget.data,
       clock: _clock,
       initialFolder: _folder,
       documents: widget.documents,
       openCoach: _openCoach,
     ),
-    _ => SettingsPage(
+    PersonalTab.settings => SettingsPage(
       data: widget.data,
       clock: _clock,
       workspace: widget.workspace,
       reminders: widget.reminders,
       welcomeVoice: widget.welcomeVoice,
+      openAiSettings: _openAiSettings,
     ),
   };
 
@@ -318,66 +459,46 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => PopScope<void>(
-    canPop: _tab == 0,
+    canPop: _tab == PersonalTab.home,
     onPopInvokedWithResult: (didPop, _) {
-      if (!didPop && _tab != 0) setState(() => _tab = 0);
+      if (!didPop && _tab != PersonalTab.home)
+        _selectDestination(PersonalTab.home);
     },
     child: AnnotatedRegion<SystemUiOverlayStyle>(
       value: deskSystemBars,
       child: ListenableBuilder(
         listenable: widget.workspace,
-        builder: (context, _) => Scaffold(
-          body: Column(
-            children: [
-              _DeskHeader(cohort: widget.data.cohort),
-              Expanded(
-                child: SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: ClipRect(
-                    child: DeskReveal(
-                      key: ValueKey(_tab),
-                      child: _destination(),
+        builder: (context, _) => AmbientSolarBackdrop(
+          child: Scaffold(
+            extendBody: true,
+            backgroundColor: Colors.transparent,
+            body: Column(
+              children: [
+                _DeskHeader(cohort: widget.data.cohort),
+                Expanded(
+                  child: SafeArea(
+                    top: false,
+                    bottom: false,
+                    child: ClipRect(
+                      child: DeskReveal(
+                        key: ValueKey(_tab),
+                        slideFraction: .025,
+                        child: _destination(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          bottomNavigationBar: DecoratedBox(
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: DeskColors.line)),
-            ),
-            child: NavigationBar(
-              height: 65,
-              animationDuration: DeskMotion.durationOf(
-                context,
-                DeskMotion.section,
-              ),
-              selectedIndex: _tab,
-              onDestinationSelected: _selectDestination,
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.calendar_month_outlined),
-                  selectedIcon: Icon(Icons.calendar_month),
-                  label: 'Timetable',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.checklist_rounded),
-                  label: 'Study plan',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.folder_outlined),
-                  selectedIcon: Icon(Icons.folder_open_rounded),
-                  label: 'Materials',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: 'Settings',
-                ),
               ],
             ),
+            bottomNavigationBar: MediaQuery.viewInsetsOf(context).bottom > 0
+                ? null
+                : PersonalGlassNavDock(
+                    key: const Key('personal-dock'),
+                    currentTab: _tab,
+                    onTabSelected: _selectDestination,
+                    onAiPressed: _openAssistant,
+                    onAiSettings: _openAiSettings,
+                  ),
           ),
         ),
       ),

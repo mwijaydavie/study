@@ -4,6 +4,12 @@ import 'package:flutter/services.dart';
 
 import 'coach/finance_quiz.dart';
 
+const financeGuideKeys = [
+  'finance-function',
+  'finance-instruments',
+  'finance-risk-return',
+];
+
 const campusZone = 'Africa/Dar_es_Salaam';
 const campusUtcOffset = Duration(hours: 3);
 const weekDays = <String>[

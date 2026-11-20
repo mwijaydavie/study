@@ -82,5 +82,29 @@
       }
     ],
     "exercise": "Draw two columns, investor and issuer. Compare a bond’s repayment right and obligation with the ownership interest in ordinary shares."
+  },
+  "finance-risk-return": {
+    "title": "Risk and return analysis",
+    "source": "Risk and Return Analysis.pdf · PDF pp. 2–30",
+    "intro": "Return is what an investment earns or loses over a period. Risk is the possibility that the outcome differs from what you expected. Compare the possible outcomes and their uncertainty, not just the headline return.",
+    "sections": [
+      {
+        "title": "01 / Measure the uncertainty · pp. 6–11",
+        "body": "Range compares the two extremes: highest minus lowest return (20% − 5% = 15 percentage points). Variance and standard deviation compare dispersion around the mean. Probability gives the chance of an outcome; it is not a measure of how large a loss would be."
+      },
+      {
+        "title": "02 / Identify what changed · pp. 12–19",
+        "body": "A share-price drop is market risk; an unpaid customer balance is credit risk; an asset that cannot be sold fast enough to pay bills is liquidity risk. Higher rates can reduce the value of existing fixed-rate bonds. Inflation changes purchasing power, and exchange rates change the shilling cost of foreign-currency obligations."
+      },
+      {
+        "title": "03 / Operations vs. borrowing · pp. 18–23",
+        "body": "Business risk can affect a debt-free firm: weak sales or rising costs can reduce operating profit and cash inflow. In the handout’s narrower comparison, financial risk comes mainly from borrowing and having to meet interest and principal payments even when cash inflows disappoint."
+      },
+      {
+        "title": "04 / Expected return is a weighted average · pp. 26–30",
+        "body": "Multiply each possible return by its probability, keep any negative sign, then add the products. On PDF page 30: 0.50 × 20% + 0.30 × 10% + 0.20 × (−5%) = 12%. This average is not a promise that the actual return will be 12%."
+      }
+    ],
+    "exercise": "Try 25% chance of a 16% return, 50% chance of 8%, and 25% chance of −4%. Calculate the expected return and the range, then explain why neither number tells you what you will actually earn. Check: expected return 7%; range 20 percentage points."
   }
 }

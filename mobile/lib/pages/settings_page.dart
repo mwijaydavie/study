@@ -14,12 +14,14 @@ class SettingsPage extends StatelessWidget {
     required this.data,
     required this.clock,
     required this.workspace,
+    required this.openAiSettings,
     this.reminders,
     this.welcomeVoice,
   });
   final StudyData data;
   final CampusClock clock;
   final Workspace workspace;
+  final VoidCallback openAiSettings;
   final ReminderController? reminders;
   final WelcomeVoice? welcomeVoice;
 
@@ -57,8 +59,18 @@ class SettingsPage extends StatelessWidget {
         subtitle: 'Make StudyDesk work the way you like.',
         meta: '${data.cohort} · Personal app',
         icon: Icons.settings_outlined,
-        background: blue.surface,
-        accent: blue.ink,
+      ),
+      const SizedBox(height: 12),
+      DeskCard(
+        padding: EdgeInsets.zero,
+        child: ListTile(
+          key: const Key('open-ai-settings'),
+          leading: const DeskGlyph(Icons.auto_awesome_rounded, tones: gold),
+          title: const Text('AI Settings'),
+          subtitle: const Text('Offline model, tone, and note memory'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: openAiSettings,
+        ),
       ),
       const SizedBox(height: 16),
       const SectionTitle(
@@ -94,8 +106,8 @@ class SettingsPage extends StatelessWidget {
               ),
               subtitle: Text(
                 workspace.defaultView == ScheduleView.week
-                    ? 'Show the full teaching week at startup'
-                    : 'Show today’s classes at startup',
+                    ? 'Open Timetable with the full teaching week'
+                    : 'Open Timetable with today’s classes',
                 style: deskType(11, color: DeskColors.muted),
               ),
               value: workspace.defaultView == ScheduleView.week,

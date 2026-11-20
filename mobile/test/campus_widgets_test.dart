@@ -11,6 +11,8 @@ import 'package:studydesk/reminders/reminders.dart';
 import 'package:studydesk/study_data.dart';
 import 'package:studydesk/workspace.dart';
 
+import 'support/static_desk_motion.dart';
+
 import 'support/memory_campus_storage.dart';
 import 'support/memory_reminder_platform.dart';
 
@@ -77,6 +79,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: deskTheme(),
+          builder: staticDeskMotion,
           home: DeskHome(
             data: data,
             workspace: workspace,
@@ -86,7 +89,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await _tap(tester, find.text('Settings'));
+      await _tap(tester, find.byKey(const Key('nav-settings')));
       await _tap(tester, find.byKey(const Key('campus-events-settings')));
       await _tap(tester, find.byKey(const Key('add-campus-event')));
       final input = find.widgetWithText(TextFormField, 'Event title');
@@ -223,6 +226,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: deskTheme(),
+          builder: staticDeskMotion,
           home: DeskHome(
             data: data,
             workspace: workspace,
