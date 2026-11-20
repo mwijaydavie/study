@@ -491,7 +491,14 @@ class _SpringScaleTapState extends State<SpringScaleTap>
   );
   bool _pressed = false;
   bool _focused = false;
-  bool get _reduced => MediaQuery.disableAnimationsOf(context);
+  bool _reduced = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduced = MediaQuery.disableAnimationsOf(context);
+    if (_reduced && _scale.value != 1) _scale.value = 1;
+  }
 
   void _down(TapDownDetails details) {
     _pressed = true;
@@ -507,7 +514,11 @@ class _SpringScaleTapState extends State<SpringScaleTap>
 
   void _release() {
     _pressed = false;
-    if (_reduced || _scale.value == 1) {
+    // InkWell may cancel a press as its subtree deactivates. Use the
+    // cached motion setting; don't look up inherited widgets here.
+    if (_scale.value == 1) {
+      _scale.stop();
+    } else if (_reduced) {
       _scale.value = 1;
     } else {
       _scale.animateWith(SpringSimulation(_spring, _scale.value, 1, 0));
@@ -557,7 +568,10 @@ class _SpringScaleTapState extends State<SpringScaleTap>
             enableFeedback: false,
             excludeFromSemantics: true,
             splashFactory: NoSplash.splashFactory,
-            onFocusChange: (focused) => setState(() => _focused = focused),
+            onFocusChange: (focused) {
+              if (mounted && focused != _focused)
+                setState(() => _focused = focused);
+            },
             onTapDown: _down,
             onTapCancel: _release,
             onTap: _activate,

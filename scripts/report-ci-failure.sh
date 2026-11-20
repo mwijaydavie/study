@@ -33,14 +33,14 @@ for index, line in enumerate(lines):
         if item.startswith("═") or re.match(r"^\d+:\d+ [+]\d+", item):
             break
         excerpt.append(item)
-    details = [item for item in excerpt if "/test/" in item or re.match(r"^#0\s", item)]
+    details = [item for item in excerpt if "/test/" in item or "package:studydesk/" in item or re.match(r"^#0\s", item)]
     report = "\n".join([line, *excerpt[:7], *details[:3]])
     if report not in assertions:
         assertions.append(report)
     if len(assertions) >= 7:
         break
 message = "\n".join(dict.fromkeys([*failed_tests, *assertions, *important[:18], *lines[-12:]])) or "Command failed without output."
-message = message[:7000].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+message = message[:11000].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
 print(f"::error::{message}")
 PY
 exit "$status"
