@@ -155,6 +155,18 @@ class _TabStrip extends StatelessWidget {
 
     Widget tile(PersonalTab tab, {required bool showLabel}) {
       final selected = tab == current;
+      final caption = selected && showLabel
+          ? Padding(
+              padding: const EdgeInsetsDirectional.only(start: _labelInset),
+              child: Text(
+                tab.label,
+                style: labelStyle,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.clip,
+              ),
+            )
+          : const SizedBox.shrink();
       return SizedBox(
         height: PersonalGlassNavDock._touch,
         child: SpringScaleTap(
@@ -211,25 +223,17 @@ class _TabStrip extends StatelessWidget {
                 ),
                 Flexible(
                   child: ClipRect(
-                    child: AnimatedSize(
-                      duration: motion,
-                      curve: DeskMotion.solar,
-                      alignment: AlignmentDirectional.centerStart,
-                      child: selected && showLabel
-                          ? Padding(
-                              padding: const EdgeInsetsDirectional.only(
-                                start: _labelInset,
-                              ),
-                              child: Text(
-                                tab.label,
-                                style: labelStyle,
-                                maxLines: 1,
-                                softWrap: false,
-                                overflow: TextOverflow.clip,
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
+                    // Flutter 3.32 can re-dirty AnimatedSize during layout
+                    // when its controller has a zero duration. Render the
+                    // final caption directly with reduced motion enabled.
+                    child: motion == Duration.zero
+                        ? caption
+                        : AnimatedSize(
+                            duration: motion,
+                            curve: DeskMotion.solar,
+                            alignment: AlignmentDirectional.centerStart,
+                            child: caption,
+                          ),
                   ),
                 ),
               ],

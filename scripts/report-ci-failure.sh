@@ -23,13 +23,23 @@ important = [line for line in lines if re.search(
 )]
 # Flutter test failures print the expected/actual values and stack immediately
 # after this banner, before the other test files finish and displace the tail.
+failed_tests = [line for line in lines if ".dart:" in line and line.endswith(" [E]")]
 assertions = []
 for index, line in enumerate(lines):
-    if re.match(r"^═+╡ EXCEPTION CAUGHT\b", line):
-        assertions.extend(lines[index:index + 30])
-        if len(assertions) >= 60:
+    if not re.match(r"^═+╡ EXCEPTION CAUGHT\b", line):
+        continue
+    excerpt = []
+    for item in lines[index + 1:index + 80]:
+        if item.startswith("═") or re.match(r"^\d+:\d+ [+]\d+", item):
             break
-message = "\n".join(dict.fromkeys([*assertions, *important[:24], *lines[-24:]])) or "Command failed without output."
+        excerpt.append(item)
+    details = [item for item in excerpt if "/test/" in item or re.match(r"^#0\s", item)]
+    report = "\n".join([line, *excerpt[:7], *details[:3]])
+    if report not in assertions:
+        assertions.append(report)
+    if len(assertions) >= 7:
+        break
+message = "\n".join(dict.fromkeys([*failed_tests, *assertions, *important[:18], *lines[-12:]])) or "Command failed without output."
 message = message[:7000].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
 print(f"::error::{message}")
 PY

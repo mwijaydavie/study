@@ -34,13 +34,13 @@ The installed app opens from its cached release first, even on a poor connection
   npm run build
   ```
 
-- To recreate the locally organized original PDFs and private ZIP, run `python scripts/import-materials.py '/path/to/uploads'`. This copies the five required PDFs and, if present, both FN200 handouts into their module subfolders. Original handouts and the private ZIP are not tracked or bundled in the website.
+- To recreate the locally organized original PDFs and private ZIP, run `python scripts/import-materials.py '/path/to/uploads'`. This copies the five required PDFs and any of the three FN200 handouts present into their module subfolders. Original handouts and the private ZIP are not tracked or bundled in the website.
 
 ## Mwijay’s personal Flutter app
 
 The [personal Flutter app](mobile/README.md) in `mobile/` bundles the timetable, study plan and materials independently of the web preview. Run `npm run flutter:sync` when updating shared content, then rebuild the native app. On Android, **Settings → Class reminders** saves an inexact notification for a confirmed class date. **Settings → Campus events** adds manually entered offline events, optional StudyDesk notifications, and an optional Calendar editor or `.ics` handoff without reading your calendars. **Materials → My files** imports your own PDF, Word and PowerPoint copies offline; [Cloudinary backup is planned, not connected](docs/cloudinary-documents.md).
 
-**Study plan → Study Coach** records minutes and quiz totals by EAT day on the device. **Materials → FN200** has guides from both Finance handouts and the Coach has cited practice questions. Android also has optional spoken welcomes. [Online AI is not enabled](docs/study-coach-ai.md); no provider keys or private files are bundled.
+**Home** shows today’s campus activity, quick capture and pinned notes. The yellow-and-white floating dock has **Home**, **Plan**, **Materials**, **Settings**, and a separate **AI** orb. Tap the orb for supported offline lookups; hold it for AI Settings. **Plan → Study checklist → Study Coach** records study minutes and quiz totals by EAT day. **Materials → FN200** has three guides, including *Risk and return analysis*, and 18 cited questions. Android also has optional spoken welcomes. [Online AI is not enabled](docs/study-coach-ai.md); no provider keys or private files are bundled.
 
 The [automated Android build and APK checks](mobile/README.md#android-17-and-apk-from-github) passed on the `0.6.0+6` branch. This check did not publish an APK; the previous `0.4.0+4` download predates motion and Study Coach. The [offline check on Mwijay’s Android 17 phone](mobile/README.md#phase-1-phone-check) is not yet run. The [step-by-step prompts](docs/mwijay-flutter-next-prompts.md) leave stronger alarms, offline budgeting and online AI separate. The PWA remains the web edition.
 

@@ -13,6 +13,6 @@ The uploaded PDFs are labeled and arranged inside `2026-27/semester-1/`. An appa
 | [`CS243-computer-administration`](2026-27/semester-1/CS243-computer-administration/) | None confirmed | Keep weekly lecture and lab notes separate; do not assume the networking files belong here. |
 | [`IS237-algorithms`](2026-27/semester-1/IS237-algorithms/) | None yet | Trace an example by hand and include an edge case. |
 | [`ST119-operations-research`](2026-27/semester-1/ST119-operations-research/) | None yet | Write variables, an objective, feasible solution and units. |
-| [`FN200-finance`](2026-27/semester-1/FN200-finance/) | THE FINANCE FUNCTION.pdf; AN OVERVIEW OF FINANCE INSTRUMENTS.pdf | Review decisions and agency costs, then classify both sides of a contract. |
+| [`FN200-finance`](2026-27/semester-1/FN200-finance/) | THE FINANCE FUNCTION.pdf; AN OVERVIEW OF FINANCE INSTRUMENTS.pdf; Risk and Return Analysis.pdf | Review finance decisions, classify the two sides of a contract, and practice weighted returns and risk types. |
 
 The `organized-materials.zip` export combines these subfolders, the originals, and the three generated study aids. If the ignored PDFs or ZIP aren't present in a fresh checkout, rebuild them from the attachments with `python scripts/import-materials.py '/path/to/uploads'`.
