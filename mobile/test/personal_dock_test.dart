@@ -16,8 +16,6 @@ void main() {
       addTearDown(selected.dispose);
       var opened = 0;
       var settings = 0;
-      final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
       for (final size in const [
         Size(360, 740),
         Size(320, 640),
@@ -87,6 +85,7 @@ void main() {
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     },
+    semanticsEnabled: true,
   );
 
   testWidgets(
