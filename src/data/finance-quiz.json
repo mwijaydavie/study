@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "sources": [
+    { "id": "function", "title": "The finance function", "file": "THE FINANCE FUNCTION.pdf", "pageCount": 39 },
+    { "id": "instruments", "title": "Financial instruments", "file": "AN OVERVIEW OF FINANCE INSTRUMENTS.pdf", "pageCount": 8 }
+  ],
+  "questions": [
+    {
+      "id": "liquidity", "source": "function", "pages": [8],
+      "prompt": "A shop earns a profit on credit sales but cannot pay a supplier today. Which problem does this show?",
+      "choices": ["A liquidity problem", "A dividend increase", "An improvement in profitability"], "answer": 0,
+      "explanation": "Profit and cash availability are different. Liquidity is the ability to meet obligations when they fall due. Credit sales can produce profit before customers pay."
+    },
+    {
+      "id": "financing", "source": "function", "pages": [13, 14],
+      "prompt": "A firm has decided to buy a delivery van. It is now choosing a bank loan or retained profits. What kind of decision is this second choice?",
+      "choices": ["An investment decision", "A financing decision", "A dividend payment"], "answer": 1,
+      "explanation": "Buying the van is about how to use funds. Choosing the loan or retained profits is about where to get the funds."
+    },
+    {
+      "id": "dividends", "source": "function", "pages": [15],
+      "prompt": "A company pays some profit to shareholders and keeps the rest for equipment. What decision is illustrated?",
+      "choices": ["Whether to audit the accounts", "How to collect receivables", "How much profit to distribute versus retain"], "answer": 2,
+      "explanation": "Dividend decisions divide available profit between distributions to owners and retained profits."
+    },
+    {
+      "id": "working-capital", "source": "function", "pages": [17],
+      "prompt": "A shop keeps enough stock to meet demand but avoids tying up too much cash. Which responsibility is this?",
+      "choices": ["Working capital management", "Issuing ordinary shares", "Setting the dividend rate"], "answer": 0,
+      "explanation": "Working capital management covers short-term items such as stock, cash, customer receivables and supplier payables."
+    },
+    {
+      "id": "agency-information", "source": "function", "pages": [24, 30],
+      "prompt": "Managers know more about company performance than shareholders. Which cause of the agency problem does this describe?",
+      "choices": ["Residual ownership", "Information asymmetry", "Liquidity risk"], "answer": 1,
+      "explanation": "The agent has better access to information than the principal. Shareholders may then find it harder to evaluate managers’ decisions."
+    },
+    {
+      "id": "agency-audit", "source": "function", "pages": [34, 35],
+      "prompt": "Shareholders pay for an independent audit to check management’s reporting. Which type of agency cost is this?",
+      "choices": ["Residual loss", "Bonding cost", "Monitoring cost"], "answer": 2,
+      "explanation": "The audit is a means for the principals to supervise management. Residual loss is the loss that remains even after controls."
+    },
+    {
+      "id": "contract-sides", "source": "instruments", "pages": [2, 4],
+      "prompt": "What does a financial instrument create across two parties?",
+      "choices": ["An asset for one and a liability or equity instrument for the other", "The same liability for both", "An expense for both and no contractual rights"], "answer": 0,
+      "explanation": "Identify the parties to the contract. The classification depends on whether each party has a financial asset, an obligation or an ownership instrument."
+    },
+    {
+      "id": "loan-borrower", "source": "instruments", "pages": [4, 7],
+      "prompt": "A business has a contractual duty to repay a bank loan in cash. How is that duty classified for the business?",
+      "choices": ["Equity", "A financial liability", "A financial asset"], "answer": 1,
+      "explanation": "For the borrower the contract requires delivery of cash. The asset is the lender’s right to receive the payment, not the borrower’s duty to pay."
+    },
+    {
+      "id": "loan-bank", "source": "instruments", "pages": [4, 6],
+      "prompt": "Look at the same loan from the bank’s side: the bank has a contractual right to receive payments. What is that right?",
+      "choices": ["A dividend decision", "A financial liability", "A financial asset"], "answer": 2,
+      "explanation": "A right to receive cash from another party is a financial asset. Always state whose perspective you are using."
+    },
+    {
+      "id": "ordinary-shares", "source": "instruments", "pages": [8],
+      "prompt": "What interest do ordinary shares represent for a company’s owners?",
+      "choices": ["An unconditional right to loan repayments", "A residual interest after liabilities are deducted", "A short-term supplier payable"], "answer": 1,
+      "explanation": "Equity is an ownership interest in what remains after liabilities. Ordinary shares are the handout’s example."
+    },
+    {
+      "id": "cash-asset", "source": "instruments", "pages": [6],
+      "prompt": "Which item is listed as a financial asset in the handout?",
+      "choices": ["An obligation to repay a loan", "A bill due to a supplier", "Cash held by the business"], "answer": 2,
+      "explanation": "Cash is a financial asset. Obligations to pay cash are not assets of the entity that owes them."
+    },
+    {
+      "id": "terms-matter", "source": "instruments", "pages": [8],
+      "prompt": "What does the handout say about non-redeemable preference shares?",
+      "choices": ["Certain ones qualify as equity if they meet its definition", "Every preference share is automatically equity", "No preference share can be an equity instrument"], "answer": 0,
+      "explanation": "The notes qualify the example. Look at whether the terms meet the definition of an equity instrument, not just the share’s label."
+    }
+  ]
+}

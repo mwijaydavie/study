@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../design.dart';
 import '../documents/personal_documents.dart';
 import '../study_data.dart';
+import '../ui/desk_motion.dart';
 
 class PersonalDocumentsPage extends StatefulWidget {
   const PersonalDocumentsPage({
@@ -80,6 +81,7 @@ class _PersonalDocumentsPageState extends State<PersonalDocumentsPage> {
     final file = await widget.library.pick();
     if (!mounted || file == null) return;
     setState(() => _documents = [file, ...?_documents]);
+    if (ModalRoute.of(context)?.isCurrent == true) DeskHaptics.confirm();
     _notice('Saved on this phone. Nothing uploaded.');
   });
 

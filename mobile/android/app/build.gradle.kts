@@ -5,6 +5,8 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val smokeInstall = providers.gradleProperty("studydeskSmoke").orNull == "true"
+
 android {
     namespace = "tz.altraware.studydesk"
     compileSdk = flutter.compileSdkVersion
@@ -19,14 +21,28 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    androidResources {
+        // The greeting player opens a seekable raw-resource descriptor.
+        noCompress += "mp3"
+    }
+
     defaultConfig {
         applicationId = "tz.altraware.studydesk"
+        manifestPlaceholders["studyDeskLabel"] = "StudyDesk"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    if (smokeInstall) {
+        buildTypes.named("debug") {
+            // Test beside an installed StudyDesk with a different signing key.
+            applicationIdSuffix = ".smoke"
+            manifestPlaceholders["studyDeskLabel"] = "StudyDesk Test"
+        }
     }
 }
 

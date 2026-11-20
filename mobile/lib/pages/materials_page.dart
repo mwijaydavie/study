@@ -4,6 +4,7 @@ import '../design.dart';
 import '../documents/personal_documents.dart';
 import '../study_data.dart';
 import '../study_files.dart';
+import '../ui/desk_motion.dart';
 import 'personal_documents_page.dart';
 
 class MaterialsPage extends StatefulWidget {
@@ -13,11 +14,13 @@ class MaterialsPage extends StatefulWidget {
     required this.clock,
     this.initialFolder = '',
     this.documents,
+    this.openCoach,
   });
   final StudyData data;
   final CampusClock clock;
   final String initialFolder;
   final DocumentLibrary? documents;
+  final VoidCallback? openCoach;
 
   @override
   State<MaterialsPage> createState() => _MaterialsPageState();
@@ -50,9 +53,13 @@ class _MaterialsPageState extends State<MaterialsPage> {
       'IS264': [
         if (data.guides['sql'] case final guide?) _Resource.guide(guide),
       ],
+      'FN200': [
+        for (final key in ['finance-function', 'finance-instruments'])
+          if (data.guides[key] case final guide?) _Resource.guide(guide),
+      ],
     };
     return [
-      for (final code in ['IS274', 'IS264'])
+      for (final code in group.keys)
         if (data.courses[code] case final course?)
           _Folder(
             code,
@@ -193,7 +200,11 @@ class _MaterialsPageState extends State<MaterialsPage> {
                   child: ChoiceChip(
                     label: Text(entry.value),
                     selected: entry.key == _filter,
-                    onSelected: (_) => setState(() => _filter = entry.key),
+                    onSelected: (selected) {
+                      if (!selected || entry.key == _filter) return;
+                      DeskHaptics.selection();
+                      setState(() => _filter = entry.key);
+                    },
                     labelStyle: deskType(
                       11,
                       color: entry.key == _filter ? green.ink : DeskColors.ink,
@@ -237,7 +248,12 @@ class _MaterialsPageState extends State<MaterialsPage> {
                   for (final folder in visible)
                     SizedBox(
                       width: width,
-                      child: _FolderCard(folder: folder),
+                      child: _FolderCard(
+                        folder: folder,
+                        onPractice: folder.id == 'FN200'
+                            ? widget.openCoach
+                            : null,
+                      ),
                     ),
                 ],
               );
@@ -274,8 +290,9 @@ class _Folder {
 }
 
 class _FolderCard extends StatelessWidget {
-  const _FolderCard({required this.folder});
+  const _FolderCard({required this.folder, this.onPractice});
   final _Folder folder;
+  final VoidCallback? onPractice;
 
   @override
   Widget build(BuildContext context) => DeskCard(
@@ -364,6 +381,18 @@ class _FolderCard extends StatelessWidget {
                 ),
               ),
             ),
+        if (onPractice case final practice?)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                practice();
+              },
+              icon: const Icon(Icons.quiz_outlined, size: 17),
+              label: const Text('Practice FN200'),
+            ),
+          ),
       ],
     ),
   );

@@ -14,6 +14,8 @@ class MainActivity : FlutterActivity() {
     private var campus: MethodChannel? = null
     private var documents: MethodChannel? = null
     private var documentBridge: AndroidDocuments? = null
+    private var welcomeChannel: MethodChannel? = null
+    private var welcomeAudio: WelcomeAudio? = null
     private var permissionResult: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -29,9 +31,37 @@ class MainActivity : FlutterActivity() {
         documents = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "tz.altraware.studydesk/documents").also {
             it.setMethodCallHandler(library::handle)
         }
+        val player = WelcomeAudio(this)
+        welcomeAudio = player
+        welcomeChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "tz.altraware.studydesk/welcome_voice").also {
+            it.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "play" -> result.success(player.play(call.arguments as? String))
+                    "stop" -> {
+                        player.stop()
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        welcomeAudio?.foreground = true
+    }
+
+    override fun onPause() {
+        welcomeAudio?.foreground = false
+        super.onPause()
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        welcomeChannel?.setMethodCallHandler(null)
+        welcomeChannel = null
+        welcomeAudio?.foreground = false
+        welcomeAudio = null
         reminders?.setMethodCallHandler(null)
         reminders = null
         campus?.setMethodCallHandler(null)

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../design.dart';
 import '../reminders/reminders.dart';
 import '../study_data.dart';
+import '../ui/welcome_voice.dart';
 import '../workspace.dart';
 import 'campus_events_page.dart';
 import 'reminders_page.dart';
@@ -14,11 +15,13 @@ class SettingsPage extends StatelessWidget {
     required this.clock,
     required this.workspace,
     this.reminders,
+    this.welcomeVoice,
   });
   final StudyData data;
   final CampusClock clock;
   final Workspace workspace;
   final ReminderController? reminders;
+  final WelcomeVoice? welcomeVoice;
 
   Future<void> _clearWeek(BuildContext context) async {
     final confirm = await showDialog<bool>(
@@ -103,6 +106,10 @@ class SettingsPage extends StatelessWidget {
           ],
         ),
       ),
+      if (welcomeVoice case final voice?) ...[
+        const SizedBox(height: 13),
+        _WelcomeVoiceSetting(voice: voice),
+      ],
       if (reminders case final controller?) ...[
         const SizedBox(height: 13),
         ListenableBuilder(
@@ -269,5 +276,58 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
     ],
+  );
+}
+
+class _WelcomeVoiceSetting extends StatelessWidget {
+  const _WelcomeVoiceSetting({required this.voice});
+  final WelcomeVoice voice;
+
+  Future<void> _preview(BuildContext context) async {
+    final started = await voice.preview();
+    if (started || !context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No greeting played. Check silent mode and media volume, or wait for current audio.',
+          ),
+        ),
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) => DeskCard(
+    padding: EdgeInsets.zero,
+    child: ListenableBuilder(
+      listenable: voice,
+      builder: (context, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SwitchListTile(
+            key: const Key('spoken-welcome'),
+            secondary: const DeskGlyph(Icons.volume_up_outlined, tones: gold),
+            title: Text(
+              'Spoken welcome',
+              style: deskType(13, weight: FontWeight.w800),
+            ),
+            subtitle: const Text(
+              'Salamu za Mwijay wakati wa kufungua app. Sauti ziko kwenye simu.',
+            ),
+            value: voice.enabled,
+            onChanged: voice.setEnabled,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 5),
+            child: TextButton.icon(
+              onPressed: () => _preview(context),
+              icon: const Icon(Icons.play_arrow_rounded, size: 18),
+              label: const Text('Preview next greeting'),
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }

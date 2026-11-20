@@ -13,10 +13,14 @@ import 'pages/campus_events_page.dart';
 import 'pages/materials_page.dart';
 import 'pages/plan_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/study_coach_page.dart';
 import 'pages/timetable_page.dart';
 import 'reminders/reminder_plan.dart';
 import 'reminders/reminders.dart';
 import 'study_data.dart';
+import 'ui/desk_launch.dart';
+import 'ui/desk_motion.dart';
+import 'ui/welcome_voice.dart';
 import 'workspace.dart';
 
 void main() {
@@ -52,6 +56,7 @@ class _BootPageState extends State<_BootPage> {
   Workspace? _workspace;
   ReminderController? _reminders;
   CampusEventBook? _campusEvents;
+  WelcomeVoice? _welcomeVoice;
 
   @override
   void initState() {
@@ -78,6 +83,7 @@ class _BootPageState extends State<_BootPage> {
       _workspace = Workspace(prefs);
       _campusEvents = events;
       if (android) {
+        _welcomeVoice = WelcomeVoice(prefs, const AndroidWelcomePlayer());
         _reminders = ReminderController(
           plan: ClassReminderPlan(data),
           platform: AndroidReminderPlatform(),
@@ -94,6 +100,7 @@ class _BootPageState extends State<_BootPage> {
   void dispose() {
     _reminders?.dispose();
     _campusEvents?.dispose();
+    _welcomeVoice?.dispose();
     _workspace?.dispose();
     super.dispose();
   }
@@ -101,33 +108,21 @@ class _BootPageState extends State<_BootPage> {
   @override
   Widget build(BuildContext context) => FutureBuilder<StudyData>(
     future: _load,
-    builder: (context, snapshot) {
-      if (snapshot.hasData && _workspace != null) {
-        return DeskHome(
-          data: snapshot.data!,
-          workspace: _workspace!,
-          reminders: _reminders,
-          documents: !kIsWeb && defaultTargetPlatform == TargetPlatform.android
-              ? const AndroidDocumentLibrary()
-              : null,
-        );
-      }
-      return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: snapshot.hasError
-                ? const Text(
-                    'Couldn’t load the bundled StudyDesk files. Rebuild with the matching offline assets.',
-                    textAlign: TextAlign.center,
-                  )
-                : const CircularProgressIndicator(
-                    semanticsLabel: 'Opening StudyDesk',
-                  ),
-          ),
-        ),
-      );
-    },
+    builder: (context, snapshot) => DeskLaunchStage(
+      failed: snapshot.hasError,
+      ready: snapshot.hasData && _workspace != null
+          ? DeskHome(
+              data: snapshot.data!,
+              workspace: _workspace!,
+              reminders: _reminders,
+              welcomeVoice: _welcomeVoice,
+              documents:
+                  !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+                  ? const AndroidDocumentLibrary()
+                  : null,
+            )
+          : null,
+    ),
   );
 }
 
@@ -138,12 +133,14 @@ class DeskHome extends StatefulWidget {
     required this.workspace,
     this.reminders,
     this.documents,
+    this.welcomeVoice,
     this.now = DateTime.now,
   });
   final StudyData data;
   final Workspace workspace;
   final ReminderController? reminders;
   final DocumentLibrary? documents;
+  final WelcomeVoice? welcomeVoice;
   final DateTime Function() now;
 
   @override
@@ -165,6 +162,15 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     _startClockUpdates();
     _reminderTaps = widget.reminders?.opened.listen((_) => _openReminderTap());
     _syncReminders();
+    if (widget.welcomeVoice != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        widget.welcomeVoice?.ready(
+          WidgetsBinding.instance.lifecycleState,
+          widget.now(),
+        );
+      });
+    }
   }
 
   void _syncReminders() {
@@ -233,6 +239,7 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    widget.welcomeVoice?.lifecycle(state, widget.now());
     if (state == AppLifecycleState.resumed) {
       _refreshTime();
       _startClockUpdates();
@@ -247,6 +254,59 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
     _folder = code;
     _tab = 2;
   });
+
+  void _selectDestination(int index) {
+    if (index != _tab) {
+      DeskHaptics.selection();
+    } else if (index != 2 || _folder.isEmpty) {
+      return;
+    }
+    setState(() {
+      _tab = index;
+      if (index == 2) _folder = '';
+    });
+  }
+
+  void _openCoach() => Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      builder: (_) => StudyCoachPage(
+        data: widget.data,
+        journal: widget.workspace.studyJournal,
+        now: widget.now,
+      ),
+    ),
+  );
+
+  Widget _destination() => switch (_tab) {
+    0 => TimetablePage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      openFolder: _openFolder,
+      reminders: widget.reminders,
+    ),
+    1 => PlanPage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      openFolder: _openFolder,
+      openCoach: _openCoach,
+    ),
+    2 => MaterialsPage(
+      data: widget.data,
+      clock: _clock,
+      initialFolder: _folder,
+      documents: widget.documents,
+      openCoach: _openCoach,
+    ),
+    _ => SettingsPage(
+      data: widget.data,
+      clock: _clock,
+      workspace: widget.workspace,
+      reminders: widget.reminders,
+      welcomeVoice: widget.welcomeVoice,
+    ),
+  };
 
   @override
   void dispose() {
@@ -263,7 +323,7 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
       if (!didPop && _tab != 0) setState(() => _tab = 0);
     },
     child: AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+      value: deskSystemBars,
       child: ListenableBuilder(
         listenable: widget.workspace,
         builder: (context, _) => Scaffold(
@@ -274,33 +334,12 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
                 child: SafeArea(
                   top: false,
                   bottom: false,
-                  child: switch (_tab) {
-                    0 => TimetablePage(
-                      data: widget.data,
-                      clock: _clock,
-                      workspace: widget.workspace,
-                      openFolder: _openFolder,
-                      reminders: widget.reminders,
+                  child: ClipRect(
+                    child: DeskReveal(
+                      key: ValueKey(_tab),
+                      child: _destination(),
                     ),
-                    1 => PlanPage(
-                      data: widget.data,
-                      clock: _clock,
-                      workspace: widget.workspace,
-                      openFolder: _openFolder,
-                    ),
-                    2 => MaterialsPage(
-                      data: widget.data,
-                      clock: _clock,
-                      initialFolder: _folder,
-                      documents: widget.documents,
-                    ),
-                    _ => SettingsPage(
-                      data: widget.data,
-                      clock: _clock,
-                      workspace: widget.workspace,
-                      reminders: widget.reminders,
-                    ),
-                  },
+                  ),
                 ),
               ),
             ],
@@ -311,11 +350,12 @@ class _DeskHomeState extends State<DeskHome> with WidgetsBindingObserver {
             ),
             child: NavigationBar(
               height: 65,
+              animationDuration: DeskMotion.durationOf(
+                context,
+                DeskMotion.section,
+              ),
               selectedIndex: _tab,
-              onDestinationSelected: (index) => setState(() {
-                _tab = index;
-                if (index == 2) _folder = '';
-              }),
+              onDestinationSelected: _selectDestination,
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.calendar_month_outlined),

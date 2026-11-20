@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../design.dart';
 import '../study_data.dart';
 import '../study_files.dart';
+import '../ui/desk_motion.dart';
 import '../workspace.dart';
 
 class PlanPage extends StatelessWidget {
@@ -12,11 +13,13 @@ class PlanPage extends StatelessWidget {
     required this.clock,
     required this.workspace,
     required this.openFolder,
+    required this.openCoach,
   });
   final StudyData data;
   final CampusClock clock;
   final Workspace workspace;
   final ValueChanged<String> openFolder;
+  final VoidCallback openCoach;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,24 @@ class PlanPage extends StatelessWidget {
           background: violet.surface,
           accent: violet.ink,
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 12),
+        DeskCard(
+          padding: EdgeInsets.zero,
+          child: ListTile(
+            key: const Key('open-study-coach'),
+            leading: const DeskGlyph(Icons.auto_stories_outlined, tones: gold),
+            title: Text(
+              'Study Coach',
+              style: deskType(14, weight: FontWeight.w800),
+            ),
+            subtitle: const Text(
+              'Umesoma nini leo? Rekodi dakika au jibu quiz ya FN200.',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: openCoach,
+          ),
+        ),
+        const SizedBox(height: 12),
         DeskCard(
           color: violet.surface,
           border: const Color(0xffe4d8fa),
@@ -60,12 +80,20 @@ class PlanPage extends StatelessWidget {
               const SizedBox(height: 9),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: LinearProgressIndicator(
-                  value: fraction,
-                  minHeight: 7,
-                  backgroundColor: const Color(0xffded2f5),
-                  color: violet.ink,
-                  semanticsLabel: 'Weekly study progress',
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(end: fraction),
+                  duration: DeskMotion.durationOf(context, DeskMotion.launch),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, _) => LinearProgressIndicator(
+                    value: MediaQuery.disableAnimationsOf(context)
+                        ? fraction
+                        : value,
+                    minHeight: 7,
+                    backgroundColor: const Color(0xffded2f5),
+                    color: violet.ink,
+                    semanticsLabel: 'Weekly study progress',
+                    semanticsValue: '${(fraction * 100).round()}%',
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -232,7 +260,15 @@ class _StudyCard extends StatelessWidget {
               child: Checkbox(
                 key: ValueKey('done-${block.id}'),
                 value: completed,
-                onChanged: (_) => toggle(),
+                onChanged: (checked) {
+                  if (checked == null || checked == completed) return;
+                  if (checked) {
+                    DeskHaptics.confirm();
+                  } else {
+                    DeskHaptics.selection();
+                  }
+                  toggle();
+                },
                 activeColor: green.ink,
               ),
             ),
